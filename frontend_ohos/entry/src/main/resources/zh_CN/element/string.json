@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "iRadio 主模块"
+    },
+    {
+      "name": "ability_desc",
+      "value": "iRadio 入口"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "iradio"
+    },
+    {
+      "name": "mic_reason",
+      "value": "用于在收听电台时展示实时音频频谱"
+    }
+  ]
+}

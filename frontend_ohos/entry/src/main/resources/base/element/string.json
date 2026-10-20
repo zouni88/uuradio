@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "iRadio main module"
+    },
+    {
+      "name": "ability_desc",
+      "value": "iRadio entry ability"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "iradio"
+    },
+    {
+      "name": "mic_reason",
+      "value": "Used to show a live audio spectrum while listening to stations."
+    }
+  ]
+}

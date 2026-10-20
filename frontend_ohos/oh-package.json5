@@ -1,0 +1,11 @@
+{
+  "modelVersion": "5.0.4",
+  "name": "iradio",
+  "version": "1.0.0",
+  "description": "iRadio 网络收音机 HarmonyOS 原生端",
+  "main": "",
+  "author": "uunas",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {}
+}

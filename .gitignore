@@ -1,0 +1,16 @@
+# IDE / editor
+.trae/
+.idea/
+*.iml
+.vscode/
+
+# Build cache (root hvigor)
+.hvigor/
+
+# Local data (large files, not referenced by frontends)
+data/
+
+# OS junk
+.DS_Store
+Thumbs.db
+Desktop.ini

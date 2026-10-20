@@ -1,0 +1,10 @@
+{
+  "modelVersion": "5.0.4",
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "iRadio 主模块",
+  "main": "",
+  "author": "uunas",
+  "license": "",
+  "dependencies": {}
+}
