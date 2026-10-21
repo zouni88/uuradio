@@ -7,8 +7,8 @@
 # Build cache (root hvigor)
 .hvigor/
 
-# Local data (large files, not referenced by frontends)
-data/
+# Local data (large files at repo root, not referenced by frontends)
+/data/
 
 # OS junk
 .DS_Store

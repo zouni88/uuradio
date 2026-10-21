@@ -202,12 +202,9 @@ class _CountrySection extends ConsumerWidget {
         const SizedBox(height: 4),
         async.when(
           loading: () => StationListSkeleton.fill(context),
-          error: (error, _) => SizedBox(
-            height: 120,
-            child: ErrorRetryView(
-              error: error,
-              onRetry: () => ref.invalidate(listProvider),
-            ),
+          error: (error, _) => ErrorRetryView(
+            error: error,
+            onRetry: () => ref.invalidate(listProvider),
           ),
           data: (stations) {
             if (stations.isEmpty) {
@@ -252,12 +249,9 @@ class _HotRail extends ConsumerWidget {
     final provider = topClicksProvider;
     return async.when(
       loading: () => const HotRailSkeleton(),
-      error: (error, _) => SizedBox(
-        height: 120,
-        child: ErrorRetryView(
-          error: error,
-          onRetry: () => ref.invalidate(provider),
-        ),
+      error: (error, _) => ErrorRetryView(
+        error: error,
+        onRetry: () => ref.invalidate(provider),
       ),
       data: (stations) {
         final scheme = Theme.of(context).colorScheme;
