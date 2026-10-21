@@ -30,8 +30,8 @@ Future<void> main() async {
   final handler = await AudioService.init(
     builder: () => RadioAudioHandler(),
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.iradio.iradio.playback',
-      androidNotificationChannelName: 'iRadio',
+      androidNotificationChannelId: 'com.uunas.uuradio.playback',
+      androidNotificationChannelName: 'UURadio',
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,
     ),

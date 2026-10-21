@@ -77,6 +77,13 @@ class RadioAudioHandler extends BaseAudioHandler {
   Stream<int?> get androidAudioSessionIdStream =>
       _player.androidAudioSessionIdStream;
 
+  /// 播放器音量（0..1）：无系统音量通道平台（iOS）上车机音量滚轮的降级数据源。
+  double get playerVolume => _player.volume;
+
+  /// 设置播放器音量（0..1）。
+  Future<void> setPlayerVolume(double v) =>
+      _player.setVolume(v.clamp(0.0, 1.0));
+
   Station? get currentStation => _snapshot.station;
 
   void _emit(PlaybackSnapshot next) {

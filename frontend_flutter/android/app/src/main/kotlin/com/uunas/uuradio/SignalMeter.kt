@@ -1,4 +1,4 @@
-package com.iradio.iradio
+package com.uunas.uuradio
 
 import android.content.Context
 import android.net.ConnectivityManager

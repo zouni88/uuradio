@@ -1,4 +1,4 @@
-package com.iradio.iradio
+package com.uunas.uuradio
 
 import android.Manifest
 import android.content.Context
@@ -200,11 +200,13 @@ class SpectrumVisualizer :
 class MainActivity : AudioServiceActivity() {
     private val spectrumVisualizer = SpectrumVisualizer()
     private val signalMeter = SignalMeter()
+    private val volumeControl = VolumeControl()
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         spectrumVisualizer.attach(this, flutterEngine.dartExecutor.binaryMessenger)
         signalMeter.attach(this, flutterEngine.dartExecutor.binaryMessenger)
+        volumeControl.attach(this, flutterEngine.dartExecutor.binaryMessenger)
     }
 
     override fun onRequestPermissionsResult(

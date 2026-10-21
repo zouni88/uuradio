@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => 'iRadio';
+  String get appTitle => 'UURadio';
 
   @override
   String get tabDiscover => '发现';
