@@ -104,11 +104,38 @@ final playerProvider =
 /// 调谐"波段"：最近一次播放入口所在的电台列表。
 /// 播放页飞梭旋钮在该列表内上一台/下一台切换，类似传统收音机换波段。
 class TuningBandController extends Notifier<List<Station>> {
+  /// 分页来源的续载回调（null = 固定列表，如收藏/热门榜）。
+  Future<List<Station>?> Function()? _loadMore;
+  bool _loadingMore = false;
+
   @override
   List<Station> build() => const [];
 
-  void set(List<Station> band) {
+  void set(List<Station> band, {Future<List<Station>?> Function()? loadMore}) {
+    _loadMore = loadMore;
     if (!identical(state, band)) state = band;
+  }
+
+  /// 是否还有可续载的分页来源（固定列表或已耗尽 = false）。
+  bool get canLoadMore => _loadMore != null;
+
+  /// 波段来源为分页列表时续载下一页并增长波段；固定列表为空操作。
+  Future<void> loadMore() async {
+    final fn = _loadMore;
+    if (fn == null || _loadingMore) return;
+    _loadingMore = true;
+    try {
+      final updated = await fn();
+      if (!ref.mounted) return;
+      if (updated != null && updated.length > state.length) {
+        state = updated;
+      } else if (updated != null) {
+        // 来源已到底：清除回调，之后末尾步进允许回卷。
+        _loadMore = null;
+      }
+    } finally {
+      _loadingMore = false;
+    }
   }
 }
 
@@ -132,11 +159,18 @@ class TunerController extends Notifier<int?> {
   void tune(int dir) {
     final band = ref.read(tuningBandProvider);
     if (band.isEmpty) return;
+    final bandCtrl = ref.read(tuningBandProvider.notifier);
     final current = ref.read(playerProvider).station;
     final base = state ??
         (current == null
             ? -1
             : band.indexWhere((s) => s.uuid == current.uuid));
+    // 末尾继续向前且来源还有下一页：触发续载并停在最后一台，
+    // 不回卷到第一台（加载期间滚轮步进同样被钳制在此）。
+    if (dir > 0 && base == band.length - 1 && bandCtrl.canLoadMore) {
+      bandCtrl.loadMore();
+      return;
+    }
     final next =
         base < 0 ? (dir > 0 ? 0 : band.length - 1) : (base + dir) % band.length;
     state = next;

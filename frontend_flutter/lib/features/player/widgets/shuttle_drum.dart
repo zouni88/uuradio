@@ -7,8 +7,100 @@ import 'package:flutter/services.dart';
 /// 每档（一个电台）对应的滚动像素。
 const double _notchPx = 14;
 
+/// 滚轮配色方案：鼓面受光剖面 + 槽/棱/高光颜色。
+class DrumPalette {
+  const DrumPalette({
+    required this.body,
+    required this.groove,
+    required this.ridge,
+    required this.highlight,
+  });
+
+  /// 基面渐变（迎光→背光 6 档）。
+  final List<Color> body;
+
+  /// 环间深槽颜色。
+  final Color groove;
+
+  /// 环顶亮边颜色。
+  final Color ridge;
+
+  /// 固定镜面柔光带颜色。
+  final Color highlight;
+
+  static const DrumPalette graphite = DrumPalette(
+    body: [
+      Color(0xFF78818F),
+      Color(0xFF9AA3B1),
+      Color(0xFF767E8C),
+      Color(0xFF535A66),
+      Color(0xFF333840),
+      Color(0xFF1D2026),
+    ],
+    groove: Color(0xFF04060A),
+    ridge: Color(0xFFC3CCD9),
+    highlight: Color(0xFFE8EEF5),
+  );
+
+  static const DrumPalette neonCyan = DrumPalette(
+    body: [
+      Color(0xFF12525C),
+      Color(0xFF1B7482),
+      Color(0xFF125A66),
+      Color(0xFF0B3A44),
+      Color(0xFF072630),
+      Color(0xFF04161E),
+    ],
+    groove: Color(0xFF02121A),
+    ridge: Color(0xFF5BE7F4),
+    highlight: Color(0xFF8AF2FB),
+  );
+
+  static const DrumPalette pianoBlack = DrumPalette(
+    body: [
+      Color(0xFF30353D),
+      Color(0xFF4C525C),
+      Color(0xFF323840),
+      Color(0xFF1C2026),
+      Color(0xFF0D0F13),
+      Color(0xFF050608),
+    ],
+    groove: Color(0xFF000000),
+    ridge: Color(0xFFD7DEE7),
+    highlight: Color(0xFFFFFFFF),
+  );
+
+  static const DrumPalette warmCopper = DrumPalette(
+    body: [
+      Color(0xFF8A6440),
+      Color(0xFFC49468),
+      Color(0xFF96704A),
+      Color(0xFF66482C),
+      Color(0xFF402C1A),
+      Color(0xFF251810),
+    ],
+    groove: Color(0xFF120A04),
+    ridge: Color(0xFFEFC9A0),
+    highlight: Color(0xFFF5DDBE),
+  );
+
+  static const DrumPalette panelGrey = DrumPalette(
+    body: [
+      Color(0xFF333A46),
+      Color(0xFF454D5B),
+      Color(0xFF313742),
+      Color(0xFF22262E),
+      Color(0xFF15181E),
+      Color(0xFF0D0F13),
+    ],
+    groove: Color(0xFF05070B),
+    ridge: Color(0xFF7E8794),
+    highlight: Color(0xFFC8D2DE),
+  );
+}
+
 /// 飞梭（调谐滚轮）：横向左右拖动 或 纵向上下拨动，滚过一格切换一台。
-/// 拉丝金属鼓面纹理随拖动滚动，中央固定背光游标；带惯性、刻度吸附与触感反馈。
+/// 环叠金属鼓面随拖动滚动；带惯性、刻度吸附与触感反馈。
 class ShuttleDrum extends StatefulWidget {
   const ShuttleDrum({
     super.key,
@@ -18,6 +110,7 @@ class ShuttleDrum extends StatefulWidget {
     this.height = 62,
     this.axis = Axis.horizontal,
     this.tiltY = 0,
+    this.palette = DrumPalette.neonCyan,
   });
 
   /// 每滚过一格回调：direction 为 +1（下一台）/ -1（上一台）。
@@ -32,6 +125,9 @@ class ShuttleDrum extends StatefulWidget {
   /// 绕 Y 轴的透视倾角（度）：让滚轮像斜对驾驶位的实体飞轮，
   /// 正角 = 左缘朝向观察者。0 = 正对屏幕平面。
   final double tiltY;
+
+  /// 配色方案（鼓面金属色调）。
+  final DrumPalette palette;
 
   @override
   State<ShuttleDrum> createState() => _ShuttleDrumState();
@@ -179,6 +275,7 @@ class _ShuttleDrumState extends State<ShuttleDrum>
             scheme: Theme.of(context).colorScheme,
             enabled: widget.enabled,
             axis: widget.axis,
+            palette: widget.palette,
           ),
           // 无 child 的 CustomPaint 在松约束下会塌缩为 0 尺寸（纵向模式高度
           // 约束是松的），用 SizedBox.expand 强制填满。
@@ -200,19 +297,22 @@ class _ShuttleDrumState extends State<ShuttleDrum>
   }
 }
 
-/// 鼓面绘制：拉丝金属胶囊 + 随 pos 滚动的机加工凹槽（两端渐隐）+ 中央固定背光游标。
+/// 鼓面绘制：实体调谐滚轮的"环叠"结构——一圈圈金属环堆叠、环间窄黑槽，
+/// 随 pos 滚动并沿圆柱弧面投影压缩，固定镜面柔光带 + 左亮右暗受光剖面。
 class _DrumPainter extends CustomPainter {
   _DrumPainter({
     required this.pos,
     required this.scheme,
     required this.enabled,
     required this.axis,
+    this.palette = DrumPalette.neonCyan,
   });
 
   final double pos;
   final ColorScheme scheme;
   final bool enabled;
   final Axis axis;
+  final DrumPalette palette;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -225,24 +325,53 @@ class _DrumPainter extends CustomPainter {
       const Radius.circular(5),
     );
 
-    // ---- 亮银车削铝：多段明暗 = 真实铝件的镜面受光剖面 ----
-    // （纵向左亮右暗；横向顶亮底暗）。
+    // ---- 圆柱几何：可视面是一段圆弧（±θmax），纹理坐标 s（弧长）
+    // 投影为 center + R·sin(s/R)——越靠两端棱纹越密、越暗，
+    // 像真实滚轮绕离视线那样"卷"进机壳。 ----
+    const thetaMax = 1.326; // ≈76°
+    final span = vertical ? h : w;
+    final center = span / 2;
+    final radius = center / math.sin(thetaMax);
+    final arcHalf = radius * thetaMax;
+
+    double project(double s) {
+      final th = (s / radius).clamp(-thetaMax, thetaMax);
+      return center + radius * math.sin(th);
+    }
+
+    double shade(double s) {
+      final th = (s / radius).clamp(-thetaMax, thetaMax);
+      return math.pow(math.cos(th), 1.3).toDouble();
+    }
+
+    // ---- 安装槽：滚轮嵌入机壳的暗缝（纵向=右缘、横向=底缘）----
+    final slot = Paint()
+      ..color = const Color(0xFF04060A)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5);
+    canvas.drawRRect(
+      rRect
+          .shift(vertical ? const Offset(5, 0) : const Offset(0, 5))
+          .inflate(2),
+      slot,
+    );
+
+    // ---- 投影：滚轮凸出面板，在左侧面板上投下柔和阴影 ----
+    canvas.drawRRect(
+      rRect.shift(vertical ? const Offset(-9, 5) : const Offset(3, 9)),
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.5)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+    );
+
+    // ---- 中灰滚轮基面：清晰的左亮右暗圆柱受光剖面（纵向）----
     canvas.drawRRect(
       rRect,
       Paint()
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: const [
-            Color(0xFF7A828E), // 0.00 迎光棱缘
-            Color(0xFFE9EEF5), // 0.06 镜面高光带（最亮）
-            Color(0xFFC3CAD4), // 0.20 亮部
-            Color(0xFF9BA2AE), // 0.42 中间调
-            Color(0xFF6B727E), // 0.68 暗部过渡
-            Color(0xFF474D58), // 0.86 芯部阴影
-            Color(0xFF2F343D), // 1.00 背光侧边缘
-          ],
-          stops: const [0.0, 0.06, 0.20, 0.42, 0.68, 0.86, 1.0],
+          colors: palette.body,
+          stops: const [0.0, 0.10, 0.32, 0.56, 0.80, 1.0],
           transform: _AxisGradient(vertical),
         ).createShader(Offset.zero & size),
     );
@@ -250,44 +379,77 @@ class _DrumPainter extends CustomPainter {
     canvas.save();
     canvas.clipRRect(rRect);
 
-    // ---- 拉丝纹理：亮铝面上的发丝细纹（静态、稳定伪随机）----
-    final span = vertical ? h : w;
-    final hair = Paint()..strokeWidth = 0.7;
-    for (var i = 0; i < span / 2.6; i++) {
-      final t = i * 2.6 + 1.3;
-      final rnd = ((i * 137) % 251) / 251;
-      hair.color = Colors.white.withValues(alpha: 0.03 + rnd * 0.06);
-      _drawHairline(canvas, t, w, h, vertical, hair);
-      if (i % 3 == 0) {
-        hair.color = Colors.black.withValues(alpha: 0.05 + rnd * 0.05);
-        _drawHairline(canvas, t + 1.1, w, h, vertical, hair);
-      }
+    // ---- 环叠结构：滚轮 = 一圈圈独立金属环堆叠。每环上缘受光、下缘
+    // 入影，环与环之间是窄而深的黑槽——这是实体调谐滚轮的读法。 ----
+    final ring = Paint();
+    for (var i = (((-arcHalf - pos) / _notchPx).ceilToDouble()); ; i++) {
+      final s = pos + i * _notchPx;
+      if (s > arcHalf) break;
+      final f = shade(s);
+      final yA = project(s - _notchPx / 2);
+      final yB = project(s + _notchPx / 2);
+      final band = vertical
+          ? Rect.fromLTRB(0, yA, w, yB)
+          : Rect.fromLTRB(yA, 0, yB, h);
+      // 环面自身弧度：上亮下暗。
+      canvas.drawRect(
+        band,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: 0.16 * f),
+              const Color(0x00000000),
+              Colors.black.withValues(alpha: 0.26 * f),
+            ],
+            stops: const [0.0, 0.52, 1.0],
+          ).createShader(band),
+      );
+      // 槽上方窄影：黑槽之前的过渡暗带，加深"陷进去"的感觉。
+      ring.strokeWidth = 4;
+      ring.color = Colors.black.withValues(alpha: 0.18 * f);
+      _drawGroove(canvas, yB - 3, 5.0, w, h, vertical, ring);
+      // 环间深槽：窄、黑、实。
+      ring.strokeWidth = 2.0;
+      ring.color = palette.groove.withValues(alpha: 0.92 * f);
+      _drawGroove(canvas, yB, 4.0, w, h, vertical, ring);
+      // 下一环顶缘亮线：金属环棱边反光。
+      ring.strokeWidth = 1.2;
+      ring.color = palette.ridge.withValues(alpha: 0.60 * f);
+      _drawGroove(canvas, yB + 2.2, 5.0, w, h, vertical, ring);
     }
 
-    // ---- 镜面反光：受光侧贯通滚轴的柔光棱 + 细亮线 ----
-    final streakX = vertical ? w * 0.16 : h * 0.16;
-    final streakEnd = vertical
-        ? Offset(streakX, h - 6)
-        : Offset(w - 6, streakX);
-    canvas.drawLine(
-      vertical ? Offset(streakX, 6) : Offset(6, streakX),
-      streakEnd,
+    // ---- 圆柱整体受光覆层：右半沉暗（纵向），统一环面与槽的光照 ----
+    canvas.drawRect(
+      Offset.zero & size,
       Paint()
-        ..strokeWidth = 6
-        ..strokeCap = StrokeCap.round
-        ..color = Colors.white.withValues(alpha: 0.16)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
-    );
-    canvas.drawLine(
-      vertical ? Offset(streakX, 10) : Offset(10, streakX),
-      vertical ? Offset(streakX, h - 10) : Offset(w - 10, streakX),
-      Paint()
-        ..strokeWidth = 1.2
-        ..strokeCap = StrokeCap.round
-        ..color = Colors.white.withValues(alpha: 0.22),
+        ..shader = LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: const [
+            Color(0x00000000),
+            Color(0x0A000000),
+            Color(0x59000000),
+          ],
+          stops: const [0.0, 0.55, 1.0],
+          transform: _AxisGradient(vertical),
+        ).createShader(Offset.zero & size),
     );
 
-    // ---- 两端环境光遮蔽：滚轴与空气交界处自然变暗（圆柱纵深感）----
+    // ---- 固定镜面柔光带：不随滚动，是圆柱面对光源的连续高光 ----
+    final hlX = vertical ? w * 0.18 : h * 0.18;
+    canvas.drawLine(
+      vertical ? Offset(hlX, 8) : Offset(8, hlX),
+      vertical ? Offset(hlX, h - 8) : Offset(w - 8, hlX),
+      Paint()
+        ..strokeWidth = 7
+        ..strokeCap = StrokeCap.round
+        ..color = palette.highlight.withValues(alpha: 0.22)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+    );
+
+    // ---- 两端环境光遮蔽：滚轴卷离视线处沉入暗影（圆柱纵深感）----
     final aoEnd = vertical ? Alignment.bottomCenter : Alignment.centerRight;
     final aoBegin = vertical ? Alignment.topCenter : Alignment.centerLeft;
     canvas.drawRRect(
@@ -302,51 +464,19 @@ class _DrumPainter extends CustomPainter {
             Color(0x00000000),
             Color(0x73000000),
           ],
-          stops: const [0.0, 0.14, 0.86, 1.0],
+          stops: const [0.0, 0.12, 0.88, 1.0],
         ).createShader(Offset.zero & size),
     );
 
-    // ---- 细密滚花：PL-990 飞轮边缘的密齿纹（3.5px 齿距，随 pos 滚动）----
-    final knurl = Paint()..strokeWidth = 1.0;
-    var k = ((pos % 3.5) + 3.5) % 3.5;
-    for (; k < span; k += 3.5) {
-      final edge = math.min(k, span - k) / 16;
-      final fade = edge.clamp(0.0, 1.0);
-      knurl.color = Colors.black.withValues(alpha: 0.20 * fade);
-      _drawGroove(canvas, k, 4.5, w, h, vertical, knurl);
-      knurl.color = const Color(0xFFDDE3EB).withValues(alpha: 0.10 * fade);
-      _drawGroove(canvas, k + 0.9, 5.5, w, h, vertical, knurl);
-    }
-
-    // ---- 主档位棱纹：随 pos 滚动，两端渐隐（宽影带 + 深槽 + 亮棱）----
-    final groove = Paint()..strokeWidth = 2;
-    var p = ((pos % _notchPx) + _notchPx) % _notchPx;
-    for (; p < span; p += _notchPx) {
-      final edge = math.min(p, span - p) / 20;
-      final fade = edge.clamp(0.0, 1.0);
-      // 槽周柔影：让刻纹在铝面上压出深度。
-      groove.strokeWidth = 9;
-      groove.color = Colors.black.withValues(alpha: 0.20 * fade);
-      _drawGroove(canvas, p, 6.0, w, h, vertical, groove);
-      // 深色槽底。
-      groove.strokeWidth = 2.4;
-      groove.color = const Color(0xFF06080B).withValues(alpha: 0.95 * fade);
-      _drawGroove(canvas, p, 7.0, w, h, vertical, groove);
-      // 受光亮棱：齿顶翻出的镜面高光。
-      groove.strokeWidth = 1.5;
-      groove.color = const Color(0xFFE4EAF1).withValues(alpha: 0.24 * fade);
-      _drawGroove(canvas, p + 1.8, 8.0, w, h, vertical, groove);
-    }
-
     canvas.restore();
 
-    // ---- 轮廓：外圈暗描边定形 + 迎光棱缘提亮 ----
+    // ---- 轮廓：外圈暗描边定形 + 迎光棱缘微弱提亮 ----
     canvas.drawRRect(
       rRect,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.4
-        ..color = const Color(0xFF181C24),
+        ..color = const Color(0xFF030508),
     );
     canvas.drawLine(
       vertical ? const Offset(2.5, 10) : const Offset(10, 2.5),
@@ -354,33 +484,9 @@ class _DrumPainter extends CustomPainter {
       Paint()
         ..strokeWidth = 1.6
         ..strokeCap = StrokeCap.round
-        ..color = Colors.white.withValues(alpha: 0.30)
+        ..color = Colors.white.withValues(alpha: 0.14)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5),
     );
-  }
-
-  /// 拉丝纹理发丝线：垂直于滚轴横贯鼓身。
-  void _drawHairline(
-    Canvas canvas,
-    double t,
-    double w,
-    double h,
-    bool vertical,
-    Paint paint,
-  ) {
-    if (vertical) {
-      canvas.drawLine(
-        const Offset(3, 0),
-        Offset(w - 3, 0).translate(0, t),
-        paint,
-      );
-    } else {
-      canvas.drawLine(
-        const Offset(0, 3),
-        Offset(0, h - 3).translate(t, 0),
-        paint,
-      );
-    }
   }
 
   void _drawGroove(

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/constants/api_constants.dart';
 import '../domain/repositories/play_record_repository.dart';
 import '../domain/repositories/radio_repository.dart';
+import 'local/browse_cache_ds.dart';
 import 'local/record_local_ds.dart';
 import 'local/settings_local_ds.dart';
 import 'network/api_server_resolver.dart';
@@ -44,11 +45,17 @@ final dioProvider = Provider<Dio>((ref) {
   return dio;
 });
 
+/// 浏览列表缓存数据源（box 已在 main 中打开）。
+final browseCacheDsProvider = Provider<BrowseCacheDs>(
+  (ref) => BrowseCacheDs(Hive.box<String>(HiveBoxes.browseCache)),
+);
+
 /// 电台数据源。
 final radioRepositoryProvider = Provider<RadioRepository>((ref) {
   return RadioRepositoryImpl(
     ref.watch(apiServerResolverProvider),
     ref.watch(dioProvider),
+    ref.watch(browseCacheDsProvider),
   );
 });
 

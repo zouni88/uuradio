@@ -5,6 +5,7 @@ import '../../../core/error/app_exception.dart';
 import '../../../data/providers.dart';
 import '../../../domain/models/station.dart';
 import '../../../domain/models/station_query.dart';
+import '../../player/player_controller.dart';
 
 /// 通用分页电台列表控制器（榜单/搜索/分类共用）。
 class StationListController extends AsyncNotifier<List<Station>> {
@@ -60,3 +61,18 @@ StationListProvider makeStationListProvider(StationQuery query) {
 
 /// 常用榜单分页大小。
 const int kListPageSize = ApiConstants.pageSize;
+
+/// 从分页列表播入：把波段绑定到该列表，车机模式 PRESETS
+/// 滚到底可继续 loadMore 增长波段（列表页在播放页下方仍存活）。
+extension PagedListPlayX on WidgetRef {
+  void playFromPagedList(Station station, StationListProvider listProvider) {
+    read(tuningBandProvider.notifier).set(
+      read(listProvider).value ?? const <Station>[],
+      loadMore: () async {
+        await read(listProvider.notifier).loadMore();
+        return read(listProvider).value;
+      },
+    );
+    read(playerProvider.notifier).play(station);
+  }
+}

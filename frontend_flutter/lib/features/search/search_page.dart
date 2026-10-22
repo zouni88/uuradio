@@ -12,7 +12,6 @@ import '../../domain/models/browse_category.dart';
 import '../../domain/models/station_query.dart';
 import '../browse/discover/station_list_controller.dart';
 import '../browse/filters/category_picker_page.dart';
-import '../player/player_controller.dart';
 import '../settings/settings_controller.dart';
 
 /// 搜索页：名称搜索（防抖）+ 码率/分类过滤。
@@ -292,7 +291,7 @@ class StationListView extends ConsumerWidget {
               final station = stations[index];
               return StationTile(
                 station: station,
-                onTap: () => ref.playFromBand(station, stations),
+                onTap: () => ref.playFromPagedList(station, provider),
               );
             },
           );

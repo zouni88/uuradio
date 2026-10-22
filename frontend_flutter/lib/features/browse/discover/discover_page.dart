@@ -14,6 +14,7 @@ import '../../../domain/models/station_query.dart';
 import '../../player/player_controller.dart';
 import '../filters/category_picker_page.dart';
 import 'discover_controller.dart';
+import 'station_list_controller.dart';
 
 /// 发现页：热门榜单横滑卡片 + 当前国家电台列表 + 分类入口。
 class DiscoverPage extends ConsumerWidget {
@@ -225,7 +226,7 @@ class _CountrySection extends ConsumerWidget {
                   StationTile(
                     station: station,
                     onTap: () {
-                      ref.playFromBand(station, stations);
+                      ref.playFromPagedList(station, listProvider);
                       AppNavigator.openPlayer(context);
                     },
                   ),

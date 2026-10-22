@@ -8,6 +8,7 @@ import '../../domain/models/station.dart';
 import '../../domain/models/station_query.dart';
 import '../../domain/repositories/radio_repository.dart';
 import '../dto/station_dto.dart';
+import '../local/browse_cache_ds.dart';
 import '../network/api_server_resolver.dart';
 
 /// 本地/备份 JSON -> Station（与 StationDto.toJson 的 camelCase 形态兼容）。
@@ -16,10 +17,11 @@ Station stationFromLocalJson(Map<String, dynamic> json) =>
 
 /// radio-browser.info 公开 API 实现。
 class RadioRepositoryImpl implements RadioRepository {
-  RadioRepositoryImpl(this._resolver, this._dio);
+  RadioRepositoryImpl(this._resolver, this._dio, this._cache);
 
   final ApiServerResolver _resolver;
   final Dio _dio;
+  final BrowseCacheDs _cache;
 
   /// 发起请求；当前主机连接失败时失效缓存并换服务器重试一次。
   Future<dynamic> _request(
@@ -78,30 +80,7 @@ class RadioRepositoryImpl implements RadioRepository {
         .toList();
   }
 
-  @override
-  Future<List<Station>> search(StationQuery query) async {
-    final data = await _get(
-      '/stations/search',
-      params: query.toQueryParameters(),
-    );
-    return _stations(data);
-  }
-
-  @override
-  Future<List<Station>> topByClicks({required int limit}) async {
-    final data = await _get('/stations/topclick/$limit');
-    return _stations(data);
-  }
-
-  @override
-  Future<List<Station>> topByVotes({required int limit}) async {
-    final data = await _get('/stations/topvote/$limit');
-    return _stations(data);
-  }
-
-  @override
-  Future<List<BrowseCategory>> countries() async {
-    final data = await _get('/countries');
+  List<BrowseCategory> _categories(dynamic data) {
     if (data is! List) return const [];
     return data
         .whereType<Map<String, dynamic>>()
@@ -114,33 +93,113 @@ class RadioRepositoryImpl implements RadioRepository {
         .toList();
   }
 
-  @override
-  Future<List<BrowseCategory>> tags({int limit = 60}) async {
-    final data = await _get('/tags', params: {'limit': '$limit'});
-    if (data is! List) return const [];
-    return data
-        .whereType<Map<String, dynamic>>()
-        .map((j) => BrowseCategory(
-              name: j['name'] as String? ?? '',
-              stationCount: j['stationcount'] as int? ?? 0,
-            ))
-        .where((c) => c.name.isNotEmpty)
-        .toList();
+  // ---- SWR 缓存：命中秒出 + 后台静默刷新回写；未命中等网络后写缓存 ----
+
+  /// 请求签名作为缓存键；名称搜索键无界不缓存（返回 null 直连网络）。
+  String? _stationsCacheKey(StationQuery q) {
+    if (q.name != null && q.name!.isNotEmpty) return null;
+    final parts = q.toQueryParameters().entries
+        .map((e) => '${e.key}=${e.value}')
+        .toList()
+      ..sort();
+    return 'srch?${parts.join('&')}';
+  }
+
+  Future<List<Station>> _cachedStations(
+    String? key,
+    Future<List<Station>> Function() remote,
+  ) async {
+    if (key == null) return remote();
+    final cached = _cache.getStations(key);
+    if (cached != null) {
+      unawaited(_silentRefreshStations(key, remote));
+      return cached;
+    }
+    final fresh = await remote();
+    if (fresh.isNotEmpty) await _cache.putStations(key, fresh);
+    return fresh;
+  }
+
+  Future<void> _silentRefreshStations(
+    String key,
+    Future<List<Station>> Function() remote,
+  ) async {
+    try {
+      final fresh = await remote();
+      if (fresh.isNotEmpty) await _cache.putStations(key, fresh);
+    } catch (_) {
+      // 静默刷新失败：保留旧缓存。
+    }
+  }
+
+  Future<List<BrowseCategory>> _cachedCategories(
+    String key,
+    Future<List<BrowseCategory>> Function() remote,
+  ) async {
+    final cached = _cache.getCategories(key);
+    if (cached != null) {
+      unawaited(_silentRefreshCategories(key, remote));
+      return cached;
+    }
+    final fresh = await remote();
+    if (fresh.isNotEmpty) await _cache.putCategories(key, fresh);
+    return fresh;
+  }
+
+  Future<void> _silentRefreshCategories(
+    String key,
+    Future<List<BrowseCategory>> Function() remote,
+  ) async {
+    try {
+      final fresh = await remote();
+      if (fresh.isNotEmpty) await _cache.putCategories(key, fresh);
+    } catch (_) {
+      // 静默刷新失败：保留旧缓存。
+    }
   }
 
   @override
-  Future<List<BrowseCategory>> languages() async {
-    final data = await _get('/languages');
-    if (data is! List) return const [];
-    return data
-        .whereType<Map<String, dynamic>>()
-        .map((j) => BrowseCategory(
-              name: j['name'] as String? ?? '',
-              stationCount: j['stationcount'] as int? ?? 0,
-            ))
-        .where((c) => c.name.isNotEmpty)
-        .toList();
+  Future<List<Station>> search(StationQuery query) =>
+      _cachedStations(_stationsCacheKey(query), () => _searchRemote(query));
+
+  Future<List<Station>> _searchRemote(StationQuery query) async {
+    final data = await _get(
+      '/stations/search',
+      params: query.toQueryParameters(),
+    );
+    return _stations(data);
   }
+
+  @override
+  Future<List<Station>> topByClicks({required int limit}) => _cachedStations(
+        'top/click/$limit',
+        () async => _stations(await _get('/stations/topclick/$limit')),
+      );
+
+  @override
+  Future<List<Station>> topByVotes({required int limit}) => _cachedStations(
+        'top/vote/$limit',
+        () async => _stations(await _get('/stations/topvote/$limit')),
+      );
+
+  @override
+  Future<List<BrowseCategory>> countries() => _cachedCategories(
+        'cat/countries',
+        () async => _categories(await _get('/countries')),
+      );
+
+  @override
+  Future<List<BrowseCategory>> tags({int limit = 60}) => _cachedCategories(
+        'cat/tags/$limit',
+        () async =>
+            _categories(await _get('/tags', params: {'limit': '$limit'})),
+      );
+
+  @override
+  Future<List<BrowseCategory>> languages() => _cachedCategories(
+        'cat/languages',
+        () async => _categories(await _get('/languages')),
+      );
 
   @override
   Future<void> reportClick(String stationUuid) async {

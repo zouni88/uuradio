@@ -8,7 +8,6 @@ import '../../../core/widgets/station_tile.dart';
 import '../../../domain/models/station.dart';
 import '../../../domain/models/station_query.dart';
 import '../../../l10n_helper.dart';
-import '../../player/player_controller.dart';
 import 'station_list_controller.dart';
 
 /// 通用分页电台列表页（榜单/国家/标签/语言/搜索结果共用）。
@@ -32,8 +31,8 @@ class _StationListPageState extends ConsumerState<StationListPage> {
     }
   }
 
-  void _openPlayer(Station station, List<Station> band) {
-    ref.playFromBand(station, band);
+  void _openPlayer(Station station) {
+    ref.playFromPagedList(station, _provider);
     AppNavigator.openPlayer(context);
   }
 
@@ -77,7 +76,7 @@ class _StationListPageState extends ConsumerState<StationListPage> {
                 final station = stations[index];
                 return StationTile(
                   station: station,
-                  onTap: () => _openPlayer(station, stations),
+                  onTap: () => _openPlayer(station),
                 );
               },
             );

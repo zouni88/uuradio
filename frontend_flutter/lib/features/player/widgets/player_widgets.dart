@@ -245,11 +245,15 @@ class PlayButton extends ConsumerWidget {
     required this.player,
     required this.station,
     this.size = 84,
+    this.onTap,
   });
 
   final PlayerUiState player;
   final Station station;
   final double size;
+
+  /// 覆盖默认"播放/暂停切换"行为（短视频翻页时，非当前页点击=播放该台）。
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -280,7 +284,8 @@ class PlayButton extends ConsumerWidget {
           ),
           onPressed: player.loading
               ? null
-              : () => ref.read(playerProvider.notifier).togglePlayPause(),
+              : (onTap ??
+                  () => ref.read(playerProvider.notifier).togglePlayPause()),
           child: player.loading
               ? SizedBox(
                   width: size * 0.36,

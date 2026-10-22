@@ -21,7 +21,8 @@ const double kTunerSlotWidth = 40;
 const double _kDeckCenterHeight = 280;
 
 /// 车机模式（MMI 金属质感）：深色拉丝面板 + 背光实体按键 + 大触控目标，
-/// 驾驶盲操习惯——左音量滚轮、中央车载显示屏/刻度尺/走带键、右侧飞梭与电台预设。
+/// 驾驶盲操习惯——最左列功能键（退出/停止/波段序号/收藏），中央车载
+/// 显示屏/刻度尺/走带键，右侧预设列表与双滚轮列（上=电台飞梭、下=音量）。
 class TunerDeck extends ConsumerStatefulWidget {
   const TunerDeck({super.key, required this.onExit});
 
@@ -45,6 +46,10 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
   /// PRESETS 列表滚动：调台时自动滚到当前台。
   final ScrollController _presetsCtrl = ScrollController();
 
+  /// 游标卡尺联动：列表自由滚动，中线游标停在哪个行就选哪个台。
+  bool _listDragging = false;
+  int _lastCenter = -1;
+
   /// 预设行固定高度（内容 38 + 底部外距 6）。
   static const double _presetRowExtent = 45;
 
@@ -60,7 +65,7 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
     duration: const Duration(seconds: 3),
   )..repeat();
 
-  /// 媒体音量（左侧滚轮）。原生系统音量通道不可用时降级为播放器音量，
+  /// 媒体音量（右下滚轮）。原生系统音量通道不可用时降级为播放器音量，
   /// 滚轮始终可动；仅两者都不可用才置灰（实际不存在这种情况）。
   int _volume = 0;
   int _maxVolume = 15;
@@ -75,6 +80,61 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
       setState(() => _offset = tween.evaluate(_align));
     });
     _loadVolume();
+    _presetsCtrl.addListener(_onPresetsScroll);
+  }
+
+  /// PRESETS 滚近底部：向分页来源续载电台（固定列表为空操作）。
+  void _onPresetsScroll() {
+    if (!_presetsCtrl.hasClients) return;
+    final pos = _presetsCtrl.position;
+    if (pos.maxScrollExtent - pos.pixels <= 120) {
+      ref.read(tuningBandProvider.notifier).loadMore();
+    }
+  }
+
+  /// 游标卡尺联动：列表自由滚动，中线游标正对的那一行就是当前电台。
+  /// 中心索引 = round(滚动偏移 / 行高)，索引一变即 _tune 到该台
+  /// （复用飞梭的 320ms 防抖与触感）；完全静止后吸附让该行正对游标。
+  /// 程序滚动（飞梭/走带/点台触发的 _scrollPresets）只发生在
+  /// _listDragging=false 时，不参与索引读取，不会形成回环。
+  bool _onPresetsNotification(ScrollNotification n) {
+    if (n is ScrollStartNotification && n.dragDetails != null) {
+      _listDragging = true;
+      _lastCenter = _centerIndex();
+      return false;
+    }
+    if (n is ScrollUpdateNotification && _listDragging) {
+      final i = _centerIndex();
+      if (i >= 0 && i != _lastCenter) {
+        final dir = _lastCenter < 0 ? 0 : i - _lastCenter;
+        _lastCenter = i;
+        if (dir != 0) {
+          HapticFeedback.selectionClick();
+          _tune(dir);
+        }
+      }
+      return false;
+    }
+    if (n is ScrollEndNotification && _listDragging) {
+      _listDragging = false;
+      final i = _lastCenter;
+      if (i >= 0) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _scrollPresets(i);
+        });
+      }
+    }
+    return false;
+  }
+
+  /// 当前正对中线游标的电台索引；无电台时返回 -1。
+  /// 列表上下 padding = (视口高-行高)/2，故 offset = index × 行高
+  /// 时该行恰好卡进游标，首尾台也能居中。
+  int _centerIndex() {
+    if (!_presetsCtrl.hasClients) return -1;
+    final count = ref.read(tuningBandProvider).length;
+    if (count == 0) return -1;
+    return (_presetsCtrl.offset / _presetRowExtent).round().clamp(0, count - 1);
   }
 
   Future<void> _loadVolume() async {
@@ -114,6 +174,7 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
 
   @override
   void dispose() {
+    _presetsCtrl.removeListener(_onPresetsScroll);
     _presetsCtrl.dispose();
     _wave.dispose();
     _align.dispose();
@@ -174,7 +235,9 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _alignTo(target.toDouble());
-        _scrollPresets(target);
+        // 用户正在拖列表：位置由手指掌控，程序回滚会与其滚动事件互相
+        // 触发形成回环，跳过（松手时由 _onPresetsNotification 吸附）。
+        if (!_listDragging) _scrollPresets(target);
       });
     }
 
@@ -209,340 +272,360 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-        child: Column(
+        child: Row(
           children: [
-            // ---- 顶栏：退出 / 停止 / 波段 / 收藏 ----
-            Row(
-              children: [
-                _PhysBtn(
-                  icon: Icons.fullscreen_exit_rounded,
-                  size: 44,
-                  iconSize: 22,
-                  onTap: widget.onExit,
+            // ---- 最左列：退出 / 停止 / 波段序号 / 收藏 ----
+            SizedBox(
+              width: 56,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _PhysBtn(
+                      icon: Icons.fullscreen_exit_rounded,
+                      size: 44,
+                      iconSize: 22,
+                      onTap: widget.onExit,
+                    ),
+                    const SizedBox(height: 10),
+                    _PhysBtn(
+                      icon: Icons.power_settings_new_rounded,
+                      size: 44,
+                      iconSize: 22,
+                      onTap: _stopAll,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'BAND',
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontMono,
+                        fontSize: 9,
+                        letterSpacing: 2,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${bandIdx < 0 ? '--' : (bandIdx + 1).toString().padLeft(2, '0')}/${band.length}',
+                      style: TextStyle(
+                        fontFamily: AppTheme.fontMono,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: scheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    FavoriteButton(station: station),
+                  ],
                 ),
-                const SizedBox(width: 10),
-                _PhysBtn(
-                  icon: Icons.power_settings_new_rounded,
-                  size: 44,
-                  iconSize: 22,
-                  onTap: _stopAll,
-                ),
-                const Spacer(),
-                Text(
-                  'BAND',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontMono,
-                    fontSize: 10,
-                    letterSpacing: 3,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${bandIdx < 0 ? '--' : (bandIdx + 1).toString().padLeft(2, '0')} / ${band.length}',
-                  style: TextStyle(
-                    fontFamily: AppTheme.fontMono,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: scheme.primary,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                FavoriteButton(station: station),
-              ],
+              ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(width: 12),
+            // ---- 中：车载显示屏 + 刻度尺 + 波形 + 走带键 ----
+            // 矮屏兜底：装得下时正常布局；装不下才用 FittedBox 等比微缩。
+            // 注意：FittedBox 会给子节点无界约束，显示屏内 Expanded /
+            // CustomPaint 在无界宽度下会塌缩导致黑屏，故始终经
+            // LayoutBuilder 传入真实宽度。
             Expanded(
-              child: Row(
-                children: [
-                  // ---- 左：音量滚轮（上拨增大、下拨减小）----
-                  SizedBox(
-                    width: 56,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final content = SizedBox(
+                    width: constraints.maxWidth,
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          _volume > 0
-                              ? Icons.volume_up_rounded
-                              : Icons.volume_off_rounded,
-                          size: 18,
-                          color: _volume > 0
-                              ? scheme.primary
-                              : scheme.onSurfaceVariant,
+                        _DisplayPanel(
+                          logoUrl: station?.logoUrl ?? '',
+                          tuning: tuning,
+                          name: station?.name.trim() ?? l10n.empty,
+                          statusText: statusText,
+                          statusColor: statusColor,
                         ),
-                        const SizedBox(height: 6),
-                        Expanded(
-                          child: ShuttleDrum(
-                            width: 56,
-                            axis: Axis.vertical,
-                            // 向内侧倾斜：右缘朝向观察者，与右侧飞梭镜像对称。
-                            tiltY: -8,
-                            onStep: _changeVolume,
+                        const SizedBox(height: 8),
+                        _MetalPanel(
+                          radius: 12,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          child: SizedBox(
+                            height: 56,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onHorizontalDragStart: _onScaleDragStart,
+                              onHorizontalDragUpdate: _onScaleDragUpdate,
+                              onHorizontalDragEnd: _onScaleDragEnd,
+                              child: CustomPaint(
+                                painter: _ScalePainter(
+                                  offset: _offset,
+                                  count: band.length,
+                                  scheme: scheme,
+                                ),
+                                child: band.isEmpty
+                                    ? Center(
+                                        child: Text(
+                                          l10n.noResults,
+                                          style: TextStyle(
+                                            fontFamily: AppTheme.fontMono,
+                                            fontSize: 12,
+                                            color: scheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox.expand(),
+                              ),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        SizedBox(
-                          height: 14,
-                          child: Text(
-                            '$_volume',
-                            style: TextStyle(
-                              fontFamily: AppTheme.fontMono,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: scheme.primary,
+                        const SizedBox(height: 8),
+                        _MetalPanel(
+                          radius: 12,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 2,
+                          ),
+                          child: SizedBox(
+                            height: 34,
+                            child: AnimatedBuilder(
+                              animation: _wave,
+                              builder: (context, _) => CustomPaint(
+                                painter: _WaveformPainter(
+                                  bands: visualizer.bands,
+                                  t: _wave.value,
+                                  playing: player.playing,
+                                  color: scheme.primary,
+                                ),
+                                // 无 child 的 CustomPaint 在松约束下塌缩为 0。
+                                child: const SizedBox.expand(),
+                              ),
                             ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        // 走带键：上一台 / 播放 / 下一台（大触控目标，可盲操）。
+                        // FittedBox 兜底：窄屏时按钮行按自然宽收缩并等比微缩，防溢出。
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _PhysBtn(
+                                icon: Icons.skip_previous_rounded,
+                                size: 60,
+                                iconSize: 30,
+                                onTap: () {
+                                  HapticFeedback.selectionClick();
+                                  _tune(-1);
+                                },
+                              ),
+                              const SizedBox(width: 18),
+                              _PhysBtn(
+                                icon: player.loading
+                                    ? Icons.autorenew_rounded
+                                    : player.playing
+                                    ? Icons.pause_rounded
+                                    : Icons.play_arrow_rounded,
+                                size: 78,
+                                iconSize: 40,
+                                active: player.playing,
+                                onTap: () {
+                                  if (player.loading) return;
+                                  ref
+                                      .read(playerProvider.notifier)
+                                      .togglePlayPause();
+                                },
+                              ),
+                              const SizedBox(width: 18),
+                              _PhysBtn(
+                                icon: Icons.skip_next_rounded,
+                                size: 60,
+                                iconSize: 30,
+                                onTap: () {
+                                  HapticFeedback.selectionClick();
+                                  _tune(1);
+                                },
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  // ---- 中：车载显示屏 + 刻度尺 + 波形 + 走带键 ----
-                  // 矮屏兜底：装得下时正常布局；装不下才用 FittedBox 等比微缩。
-                  // 注意：FittedBox 会给子节点无界约束，显示屏内 Expanded /
-                  // CustomPaint 在无界宽度下会塌缩导致黑屏，故始终经
-                  // LayoutBuilder 传入真实宽度。
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final content = SizedBox(
-                          width: constraints.maxWidth,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              _DisplayPanel(
-                                logoUrl: station?.logoUrl ?? '',
-                                tuning: tuning,
-                                name: station?.name.trim() ?? l10n.empty,
-                                statusText: statusText,
-                                statusColor: statusColor,
-                              ),
-                              const SizedBox(height: 8),
-                              _MetalPanel(
-                                radius: 12,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                child: SizedBox(
-                                  height: 56,
-                                  child: GestureDetector(
-                                    behavior: HitTestBehavior.opaque,
-                                    onHorizontalDragStart: _onScaleDragStart,
-                                    onHorizontalDragUpdate: _onScaleDragUpdate,
-                                    onHorizontalDragEnd: _onScaleDragEnd,
-                                    child: CustomPaint(
-                                      painter: _ScalePainter(
-                                        offset: _offset,
-                                        count: band.length,
-                                        scheme: scheme,
-                                      ),
-                                      child: band.isEmpty
-                                          ? Center(
-                                              child: Text(
-                                                l10n.noResults,
-                                                style: TextStyle(
-                                                  fontFamily: AppTheme.fontMono,
-                                                  fontSize: 12,
-                                                  color:
-                                                      scheme.onSurfaceVariant,
-                                                ),
-                                              ),
-                                            )
-                                          : const SizedBox.expand(),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              _MetalPanel(
-                                radius: 12,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 2,
-                                ),
-                                child: SizedBox(
-                                  height: 34,
-                                  child: AnimatedBuilder(
-                                    animation: _wave,
-                                    builder: (context, _) => CustomPaint(
-                                      painter: _WaveformPainter(
-                                        bands: visualizer.bands,
-                                        t: _wave.value,
-                                        playing: player.playing,
-                                        color: scheme.primary,
-                                      ),
-                                      // 无 child 的 CustomPaint 在松约束下塌缩为 0。
-                                      child: const SizedBox.expand(),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              // 走带键：上一台 / 播放 / 下一台（大触控目标，可盲操）。
-                              // FittedBox 兜底：窄屏时按钮行按自然宽收缩并等比微缩，防溢出。
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    _PhysBtn(
-                                      icon: Icons.skip_previous_rounded,
-                                      size: 60,
-                                      iconSize: 30,
-                                      onTap: () {
-                                        HapticFeedback.selectionClick();
-                                        _tune(-1);
-                                      },
-                                    ),
-                                    const SizedBox(width: 18),
-                                    _PhysBtn(
-                                      icon: player.loading
-                                          ? Icons.autorenew_rounded
-                                          : player.playing
-                                          ? Icons.pause_rounded
-                                          : Icons.play_arrow_rounded,
-                                      size: 78,
-                                      iconSize: 40,
-                                      active: player.playing,
-                                      onTap: () {
-                                        if (player.loading) return;
-                                        ref
-                                            .read(playerProvider.notifier)
-                                            .togglePlayPause();
-                                      },
-                                    ),
-                                    const SizedBox(width: 18),
-                                    _PhysBtn(
-                                      icon: Icons.skip_next_rounded,
-                                      size: 60,
-                                      iconSize: 30,
-                                      onTap: () {
-                                        HapticFeedback.selectionClick();
-                                        _tune(1);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                  );
+                  if (constraints.maxHeight >= _kDeckCenterHeight) {
+                    return Center(child: content);
+                  }
+                  return FittedBox(fit: BoxFit.scaleDown, child: content);
+                },
+              ),
+            ),
+            const SizedBox(width: 16),
+            // ---- 右：电台预设列 ----
+            SizedBox(
+              width: 170,
+              child: _MetalPanel(
+                radius: 12,
+                padding: const EdgeInsets.fromLTRB(10, 8, 6, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 14,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: Text(
+                          'PRESETS',
+                          style: TextStyle(
+                            fontFamily: AppTheme.fontMono,
+                            fontSize: 9,
+                            letterSpacing: 3,
+                            color: scheme.onSurfaceVariant,
                           ),
-                        );
-                        if (constraints.maxHeight >= _kDeckCenterHeight) {
-                          return Center(child: content);
-                        }
-                        return FittedBox(fit: BoxFit.scaleDown, child: content);
-                      },
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  // ---- 右：电台预设列 ----
-                  SizedBox(
-                    width: 170,
-                    child: _MetalPanel(
-                      radius: 12,
-                      padding: const EdgeInsets.fromLTRB(10, 8, 6, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 14,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 4),
-                              child: Text(
-                                'PRESETS',
-                                style: TextStyle(
-                                  fontFamily: AppTheme.fontMono,
-                                  fontSize: 9,
-                                  letterSpacing: 3,
-                                  color: scheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Expanded(
-                            // 上下各垫 (视口高-行高)/2 的 padding：
-                            // scroll = index × 行高 时选中行恰好居中，
-                            // 且首尾台也能居中（滚动范围恰好覆盖）。
-                            child: LayoutBuilder(
-                              builder: (context, c) {
-                                final pad =
-                                    ((c.maxHeight - _presetRowExtent) / 2)
-                                        .clamp(0.0, double.infinity);
-                                final list = ListView.builder(
-                                  controller: _presetsCtrl,
-                                  padding: EdgeInsets.symmetric(vertical: pad),
-                                  itemExtent: _presetRowExtent,
-                                  itemCount: band.length,
-                                  itemBuilder: (context, i) {
-                                    final s = band[i];
-                                    // 选中行由中线悬浮卡片渲染，这里留透明占位，
-                                    // 保持滚动对齐不变。
-                                    if (i == target) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    return _PresetRow(
-                                      index: i,
-                                      name: s.name.trim(),
-                                      active: false,
-                                      onTap: () => ref
-                                          .read(playerProvider.notifier)
-                                          .play(s),
-                                    );
-                                  },
-                                );
-                                if (target < 0 || target >= band.length) {
-                                  return list;
-                                }
-                                // 选中卡片钉死在列表正中：拨滚轮时只有其他行
-                                // 从它上下滑过，"选中的不动、只动列表"。
-                                return Stack(
-                                  children: [
-                                    list,
-                                    Positioned(
-                                      top: (c.maxHeight - _presetRowExtent) / 2,
-                                      left: 0,
-                                      right: 4,
-                                      child: IgnorePointer(
-                                        child: ColoredBox(
-                                          color: const Color(0xFF141820),
-                                          child: _PresetRow(
-                                            index: target,
-                                            name: band[target].name.trim(),
-                                            active: true,
-                                            onTap: () {},
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                    const SizedBox(height: 6),
+                    Expanded(
+                      // 上下各垫 (视口高-行高)/2 的 padding：
+                      // scroll = index × 行高 时选中行恰好居中，
+                      // 且首尾台也能居中（滚动范围恰好覆盖）。
+                      child: LayoutBuilder(
+                        builder: (context, c) {
+                          final pad = ((c.maxHeight - _presetRowExtent) / 2)
+                              .clamp(0.0, double.infinity);
+                          final list = NotificationListener<ScrollNotification>(
+                            onNotification: _onPresetsNotification,
+                            child: ListView.builder(
+                              controller: _presetsCtrl,
+                              padding: EdgeInsets.symmetric(vertical: pad),
+                              itemExtent: _presetRowExtent,
+                              itemCount: band.length,
+                              itemBuilder: (context, i) {
+                                final s = band[i];
+                                // 行本身无选中态：哪一行被中线游标"夹住"
+                                // 哪一行就是当前电台，样式完全统一。
+                                return _PresetRow(
+                                  index: i,
+                                  name: s.name.trim(),
+                                  onTap: () =>
+                                      ref.read(playerProvider.notifier).play(s),
                                 );
                               },
                             ),
+                          );
+                          if (band.isEmpty) return list;
+                          // 游标卡尺：固定在中线的卡爪游标，列表从其上下
+                          // 自由滑过，滚动读台（不随列表移动）。
+                          return Stack(
+                            children: [
+                              list,
+                              Positioned(
+                                top: (c.maxHeight - _presetRowExtent) / 2,
+                                left: 0,
+                                right: 4,
+                                height: _presetRowExtent,
+                                child: IgnorePointer(
+                                  child: CustomPaint(
+                                    // 卡片高 = 行高 - 底部外距 6。
+                                    painter: _CaliperPainter(
+                                      scheme.primary,
+                                      cardHeight: _presetRowExtent - 6,
+                                    ),
+                                    child: const SizedBox.expand(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    // 与顶部标题区对称，使列表视口中心 = 面板中心，
+                    // 选中行恰好居于中线。
+                    const SizedBox(height: 6),
+                    const SizedBox(height: 14),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            // ---- 最右：双滚轮同列——上=电台飞梭，下=音量。
+            // 音量图标与数字竖排在滚轮左侧，滚轮本体与飞梭右缘对齐。----
+            SizedBox(
+              width: 78,
+              child: Column(
+                children: [
+                  // 电台切换飞梭（上拨=下一台）：连杆紧贴滚轮左缘，
+                  // 与飞轮同排右对齐（鼓面右缘仍与音量滚轮对齐），
+                  // 视觉上把飞轮与左侧预设列表扣成一体。
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IgnorePointer(
+                            child: _LinkRod(
+                              color: band.isNotEmpty
+                                  ? scheme.primary
+                                  : scheme.onSurfaceVariant,
+                            ),
                           ),
-                          // 与顶部标题区对称，使列表视口中心 = 面板中心，
-                          // 与滚轮游标、连杆同处一条水平线。
-                          const SizedBox(height: 6),
-                          const SizedBox(height: 14),
+                          ShuttleDrum(
+                            width: 56,
+                            axis: Axis.vertical,
+                            // 向内侧倾斜：左缘朝向观察者。
+                            tiltY: 8,
+                            enabled: band.isNotEmpty,
+                            onStep: _tune,
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  // 连杆：把滚轮游标与列表选中行扣在一起（同处面板中线）。
-                  _LinkRod(
-                    color: band.isNotEmpty
-                        ? scheme.primary
-                        : scheme.onSurfaceVariant,
-                  ),
-                  // ---- 最右：全高纵向飞梭，上下拨动调台（上拨=下一台）----
-                  ShuttleDrum(
-                    width: 56,
-                    axis: Axis.vertical,
-                    // 向内侧倾斜：左缘朝向观察者，与左侧音量轮镜像对称。
-                    tiltY: 8,
-                    enabled: band.isNotEmpty,
-                    onStep: _tune,
+                  const SizedBox(height: 14),
+                  // 音量滚轮（上拨增大、下拨减小）。
+                  Expanded(
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 18,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                _volume > 0
+                                    ? Icons.volume_up_rounded
+                                    : Icons.volume_off_rounded,
+                                size: 16,
+                                color: _volume > 0
+                                    ? scheme.primary
+                                    : scheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                '$_volume',
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontMono,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                  color: scheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: ShuttleDrum(
+                            width: 56,
+                            axis: Axis.vertical,
+                            tiltY: 8,
+                            onStep: _changeVolume,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -783,18 +866,17 @@ class _DisplayPanel extends StatelessWidget {
   }
 }
 
-/// 预设行：编号 + 台名的大触控条，当前台背光高亮。
+/// 预设行：编号 + 台名的大触控条。行本身无选中态——当前台由中线
+/// 卡尺游标"夹住"读出，所有行样式完全统一。
 class _PresetRow extends StatelessWidget {
   const _PresetRow({
     required this.index,
     required this.name,
-    required this.active,
     required this.onTap,
   });
 
   final int index;
   final String name;
-  final bool active;
   final VoidCallback onTap;
 
   @override
@@ -812,21 +894,12 @@ class _PresetRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: active
-                    ? [
-                        scheme.primary.withValues(alpha: 0.22),
-                        const Color(0xFF12161D),
-                      ]
-                    : const [Color(0xFF20252F), Color(0xFF141820)],
+                colors: [Color(0xFF20252F), Color(0xFF141820)],
               ),
-              border: Border.all(
-                color: active
-                    ? scheme.primary.withValues(alpha: 0.8)
-                    : const Color(0xFF313846),
-              ),
+              border: Border.all(color: const Color(0xFF313846)),
             ),
             child: Row(
               children: [
@@ -836,7 +909,7 @@ class _PresetRow extends StatelessWidget {
                     fontFamily: AppTheme.fontMono,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: active ? scheme.primary : scheme.onSurfaceVariant,
+                    color: scheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -850,7 +923,7 @@ class _PresetRow extends StatelessWidget {
                       fontSize: 12.5,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
-                      color: active ? Colors.white : scheme.onSurface,
+                      color: scheme.onSurface,
                     ),
                   ),
                 ),
@@ -863,9 +936,55 @@ class _PresetRow extends StatelessWidget {
   }
 }
 
-/// 连杆：滚轮与预设列表之间 16px 间隙里的发光机械连接杆。
-/// 列表选中行与滚轮游标都被约束在面板中线，连杆画一条水平
-/// 发光短线 + 两端销钉，视觉上把两者"扣"成一体。
+/// 卡尺游标：只画在列表左缘——一道青色竖向准线 + 指向行内的三角，
+/// 垂直对准被选中行的中心。列表从其上下自由滑过，准线停在哪一行
+/// 就选中哪一行（不包裹整行，避免"列表上多了一个东西"的观感）。
+class _CaliperPainter extends CustomPainter {
+  _CaliperPainter(this.color, {required this.cardHeight});
+
+  final Color color;
+  final double cardHeight;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final cy = cardHeight / 2;
+    // 准线柔光衬底。
+    canvas.drawLine(
+      Offset(2, cy - 13),
+      Offset(2, cy + 13),
+      Paint()
+        ..color = color.withValues(alpha: 0.20)
+        ..strokeWidth = 5
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
+    // 左缘竖向准线。
+    canvas.drawLine(
+      Offset(2, cy - 13),
+      Offset(2, cy + 13),
+      Paint()
+        ..color = color
+        ..strokeWidth = 2
+        ..strokeCap = StrokeCap.round,
+    );
+    // 指向行内的三角：标出被夹住的行（尖到 x=9，不压行号文字）。
+    canvas.drawPath(
+      Path()
+        ..moveTo(4, cy - 4.5)
+        ..lineTo(9, cy)
+        ..lineTo(4, cy + 4.5)
+        ..close(),
+      Paint()..color = color,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CaliperPainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.cardHeight != cardHeight;
+}
+
+/// 连杆：电台飞梭与预设列表间隙里的发光机械连接杆——水平发光
+/// 短杆 + 两端销钉 + 金属高光棱线，把飞轮与列表"扣"成一体。
 class _LinkRod extends StatelessWidget {
   const _LinkRod({required this.color});
 
@@ -875,8 +994,10 @@ class _LinkRod extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 16,
+      height: 16,
       child: CustomPaint(
         painter: _RodPainter(color: color),
+        // 无 child 的 CustomPaint 在松约束下塌缩为 0。
         child: const SizedBox.expand(),
       ),
     );
