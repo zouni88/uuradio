@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import '../../l10n_helper.dart';
 import 'discover/discover_page.dart';
 import '../favorites/favorites_page.dart';
+import '../intercom/intercom_page.dart';
 import '../player/widgets/mini_player_bar.dart';
 import '../search/search_page.dart';
 import '../settings/settings_page.dart';
+import '../tv/tv_page.dart';
 
-/// 主页壳：4 tab + 迷你播放条。
+/// 主页壳：6 tab + 迷你播放条。
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -20,8 +22,10 @@ class _HomePageState extends State<HomePage> {
 
   static const _pages = <Widget>[
     DiscoverPage(),
+    TvPage(),
     SearchPage(),
     FavoritesPage(),
+    IntercomPage(),
     SettingsPage(),
   ];
 
@@ -44,6 +48,11 @@ class _HomePageState extends State<HomePage> {
                 label: l10n.tabDiscover,
               ),
               NavigationDestination(
+                icon: const Icon(Icons.live_tv_outlined),
+                selectedIcon: const Icon(Icons.live_tv_rounded),
+                label: l10n.tabTv,
+              ),
+              NavigationDestination(
                 icon: const Icon(Icons.search_outlined),
                 selectedIcon: const Icon(Icons.search_rounded),
                 label: l10n.tabSearch,
@@ -52,6 +61,11 @@ class _HomePageState extends State<HomePage> {
                 icon: const Icon(Icons.favorite_border_rounded),
                 selectedIcon: const Icon(Icons.favorite_rounded),
                 label: l10n.tabFavorites,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.mic_none_rounded),
+                selectedIcon: const Icon(Icons.mic_rounded),
+                label: l10n.tabIntercom,
               ),
               NavigationDestination(
                 icon: const Icon(Icons.settings_outlined),

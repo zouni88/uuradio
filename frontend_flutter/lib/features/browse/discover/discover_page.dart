@@ -12,6 +12,9 @@ import '../../../domain/models/browse_category.dart';
 import '../../../domain/models/station.dart';
 import '../../../domain/models/station_query.dart';
 import '../../player/player_controller.dart';
+import '../../tv/tv_page.dart';
+import '../../tv/tv_player_page.dart';
+import '../../tv/tv_providers.dart';
 import '../filters/category_picker_page.dart';
 import 'discover_controller.dart';
 import 'station_list_controller.dart';
@@ -74,6 +77,8 @@ class DiscoverPage extends ConsumerWidget {
                   _HotRail(async: ref.watch(topClicksProvider)),
                   const SizedBox(height: 24),
                   _CountrySection(),
+                  const SizedBox(height: 24),
+                  const _TvSection(),
                 ],
               ),
             ),
@@ -285,6 +290,7 @@ class _HotCard extends ConsumerWidget {
     required this.index,
     required this.band,
     required this.scheme,
+    this.onTap,
   });
 
   final Station station;
@@ -292,11 +298,19 @@ class _HotCard extends ConsumerWidget {
   final List<Station> band;
   final ColorScheme scheme;
 
+  /// 自定义点击行为（TV 卡片跳播放页）；为空则走电台波段播放。
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
+        final cb = onTap;
+        if (cb != null) {
+          cb();
+          return;
+        }
         ref.playFromBand(station, band);
         AppNavigator.openPlayer(context);
       },
@@ -381,6 +395,61 @@ class _HotCard extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 电视直播区块：选中国家热门频道横滑，点击进视频播放页。
+class _TvSection extends ConsumerWidget {
+  const _TvSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final provider = tvFeaturedProvider;
+    final async = ref.watch(provider);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SectionHeader(
+          title: l10n.sectionTv,
+          action: TextButton(
+            onPressed: () => AppNavigator.push(context, const TvPage()),
+            child: Text(l10n.viewAll),
+          ),
+        ),
+        const SizedBox(height: 12),
+        async.when(
+          loading: () => const HotRailSkeleton(),
+          error: (error, _) => ErrorRetryView(
+            error: error,
+            onRetry: () => ref.invalidate(provider),
+          ),
+          data: (channels) {
+            if (channels.isEmpty) return const SizedBox.shrink();
+            return SizedBox(
+              height: 180,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: channels.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder: (context, index) => _HotCard(
+                  station: channels[index],
+                  index: index,
+                  band: channels,
+                  scheme: scheme,
+                  onTap: () => AppNavigator.push(
+                    context,
+                    TvPlayerPage(channel: channels[index]),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

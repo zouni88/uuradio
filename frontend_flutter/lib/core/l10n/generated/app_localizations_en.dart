@@ -30,6 +30,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get countries => 'Countries';
 
   @override
+  String get commonCountries => 'Common Countries';
+
+  @override
   String get tags => 'Tags';
 
   @override
@@ -216,4 +219,132 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get spectrumFallback =>
       'Microphone permission denied — using simulated visualizer';
+
+  @override
+  String get tabIntercom => 'Intercom';
+
+  @override
+  String get intercomChannelHint => 'Channel name (e.g. road-trip)';
+
+  @override
+  String get intercomJoin => 'Join channel';
+
+  @override
+  String get intercomLeave => 'Leave';
+
+  @override
+  String get intercomMembers => 'MEMBERS';
+
+  @override
+  String get intercomNoMembers => 'Waiting for members…';
+
+  @override
+  String get pttHoldToTalk => 'HOLD TO TALK';
+
+  @override
+  String get pttRequesting => 'Requesting floor…';
+
+  @override
+  String get pttTalking => 'TRANSMITTING…';
+
+  @override
+  String pttListening(Object nick) {
+    return '$nick is talking';
+  }
+
+  @override
+  String get pttIdle => 'Standby';
+
+  @override
+  String get intercomNotConnected => 'Connecting…';
+
+  @override
+  String get intercomServerRequired =>
+      'Set the signaling server URL in Settings → Intercom first';
+
+  @override
+  String get intercomMicDenied => 'Microphone denied — receive only';
+
+  @override
+  String get intercomRoomFull => 'Channel is full (max 8)';
+
+  @override
+  String get intercomFloorBusy => 'Another member is talking';
+
+  @override
+  String get intercomSettings => 'Intercom';
+
+  @override
+  String get intercomServerUrl => 'Signaling server';
+
+  @override
+  String get intercomServerUrlHint =>
+      'ws:// or wss:// URL, e.g. ws://192.168.1.5:8090/ws';
+
+  @override
+  String get intercomNickname => 'Callsign';
+
+  @override
+  String get intercomNicknameHint => 'Name shown inside channels';
+
+  @override
+  String get intercomTurn => 'TURN relay (optional)';
+
+  @override
+  String get intercomTurnUrl => 'TURN URL';
+
+  @override
+  String get intercomTurnUser => 'TURN user';
+
+  @override
+  String get intercomTurnPass => 'TURN password';
+
+  @override
+  String get intercomSaved => 'Intercom settings saved';
+
+  @override
+  String get tabTv => 'TV';
+
+  @override
+  String get sectionTv => 'Live TV';
+
+  @override
+  String get tvTitle => 'Live TV';
+
+  @override
+  String get tvAllCountries => 'All Countries';
+
+  @override
+  String get tvAllGroups => 'All Groups';
+
+  @override
+  String get tvGroups => 'Groups';
+
+  @override
+  String get tvSearchHint => 'Search channels…';
+
+  @override
+  String get tvLoading => 'Loading channels…';
+
+  @override
+  String get tvEmpty => 'No channels in this category';
+
+  @override
+  String get tvBuffering => 'Buffering…';
+
+  @override
+  String get tvSignalLost => 'Signal lost, please retry';
+
+  @override
+  String get tvGeoBlocked => 'May be geo-blocked';
+
+  @override
+  String get tvAudioOnlyHint => 'Car mode: audio only';
+
+  @override
+  String get tvNowWatching => 'Now watching';
+
+  @override
+  String get tvDataSourceDesc =>
+      'Channel data from the iptv-org community; link availability is not guaranteed.';
 }

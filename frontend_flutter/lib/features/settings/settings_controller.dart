@@ -40,6 +40,32 @@ class SettingsController extends Notifier<AppSettings> {
     await ref.read(settingsDsProvider).saveCustomMirror(host);
     ref.read(apiServerResolverProvider).resetCustomMirror();
   }
+
+  /// 对讲信令服务器地址（ws:// 或 wss://）。
+  Future<void> setIntercomServerUrl(String url) async {
+    state = state.copyWith(intercomServerUrl: url.trim());
+    await ref.read(settingsDsProvider).saveIntercomServerUrl(url.trim());
+  }
+
+  Future<void> setIntercomNickname(String nick) async {
+    state = state.copyWith(intercomNickname: nick.trim());
+    await ref.read(settingsDsProvider).saveIntercomNickname(nick.trim());
+  }
+
+  Future<void> setIntercomTurn({
+    required String url,
+    required String user,
+    required String pass,
+  }) async {
+    state = state.copyWith(
+      intercomTurnUrl: url.trim(),
+      intercomTurnUser: user.trim(),
+      intercomTurnPass: pass,
+    );
+    await ref
+        .read(settingsDsProvider)
+        .saveIntercomTurn(url: url.trim(), user: user.trim(), pass: pass);
+  }
 }
 
 final settingsProvider =

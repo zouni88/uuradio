@@ -7,6 +7,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <!-- Visualizer 频谱采集（系统要求声明，运行时动态请求） -->
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- 对讲（WebRTC）：音频路由与网络状态 -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
     <application
         android:label="UURadio"

@@ -35,6 +35,9 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<!-- 对讲（PTT）麦克风采集 -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>UURadio needs microphone access for walkie-talkie (PTT) intercom.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

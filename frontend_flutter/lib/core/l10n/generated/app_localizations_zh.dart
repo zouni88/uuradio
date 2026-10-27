@@ -30,6 +30,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get countries => '国家 / 地区';
 
   @override
+  String get commonCountries => '常用国家';
+
+  @override
   String get tags => '标签';
 
   @override
@@ -212,4 +215,130 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get spectrumFallback => '麦克风权限被拒绝，已改用模拟频谱动画';
+
+  @override
+  String get tabIntercom => '对讲';
+
+  @override
+  String get intercomChannelHint => '频道名（如 road-trip）';
+
+  @override
+  String get intercomJoin => '加入频道';
+
+  @override
+  String get intercomLeave => '退出';
+
+  @override
+  String get intercomMembers => '频道成员';
+
+  @override
+  String get intercomNoMembers => '等待成员加入…';
+
+  @override
+  String get pttHoldToTalk => '按住说话';
+
+  @override
+  String get pttRequesting => '申请话权…';
+
+  @override
+  String get pttTalking => '正在讲话…';
+
+  @override
+  String pttListening(Object nick) {
+    return '$nick 正在讲话';
+  }
+
+  @override
+  String get pttIdle => '等待讲话';
+
+  @override
+  String get intercomNotConnected => '连接中…';
+
+  @override
+  String get intercomServerRequired => '请先在「设置 → 对讲」填写信令服务器地址';
+
+  @override
+  String get intercomMicDenied => '麦克风权限被拒绝，仅可收听';
+
+  @override
+  String get intercomRoomFull => '频道已满（最多 8 人）';
+
+  @override
+  String get intercomFloorBusy => '其他成员正在讲话';
+
+  @override
+  String get intercomSettings => '对讲';
+
+  @override
+  String get intercomServerUrl => '信令服务器';
+
+  @override
+  String get intercomServerUrlHint =>
+      'ws:// 或 wss:// 地址，如 ws://192.168.1.5:8090/ws';
+
+  @override
+  String get intercomNickname => '我的呼号';
+
+  @override
+  String get intercomNicknameHint => '频道内显示的名字';
+
+  @override
+  String get intercomTurn => 'TURN 中继（可选）';
+
+  @override
+  String get intercomTurnUrl => 'TURN 地址';
+
+  @override
+  String get intercomTurnUser => 'TURN 用户';
+
+  @override
+  String get intercomTurnPass => 'TURN 密码';
+
+  @override
+  String get intercomSaved => '对讲设置已保存';
+
+  @override
+  String get tabTv => '电视';
+
+  @override
+  String get sectionTv => '电视直播';
+
+  @override
+  String get tvTitle => '电视直播';
+
+  @override
+  String get tvAllCountries => '全部国家';
+
+  @override
+  String get tvAllGroups => '全部分组';
+
+  @override
+  String get tvGroups => '分组';
+
+  @override
+  String get tvSearchHint => '搜索频道…';
+
+  @override
+  String get tvLoading => '正在加载频道列表…';
+
+  @override
+  String get tvEmpty => '该分类下暂无频道';
+
+  @override
+  String get tvBuffering => '缓冲中…';
+
+  @override
+  String get tvSignalLost => '频道信号丢失，请重试';
+
+  @override
+  String get tvGeoBlocked => '可能地区受限';
+
+  @override
+  String get tvAudioOnlyHint => '车机模式仅播放音频';
+
+  @override
+  String get tvNowWatching => '正在收看';
+
+  @override
+  String get tvDataSourceDesc => '频道数据来自 iptv-org 社区，链接有效性不保证。';
 }

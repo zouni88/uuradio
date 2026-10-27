@@ -79,6 +79,43 @@ class SettingsPage extends ConsumerWidget {
             onTap: () => _editMirror(context, ref, settings.customMirror),
           ),
           const Divider(indent: 16, endIndent: 16),
+          // 对讲（PTT）：信令服务器 / 呼号 / TURN 兜底
+          ListTile(
+            leading: const Icon(Icons.cell_tower_rounded),
+            title: Text(l10n.intercomServerUrl),
+            subtitle: Text(
+              settings.intercomServerUrl.isEmpty
+                  ? l10n.intercomServerUrlHint
+                  : settings.intercomServerUrl,
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12.5),
+            ),
+            onTap: () => _editIntercomServer(context, ref,
+                settings.intercomServerUrl),
+          ),
+          ListTile(
+            leading: const Icon(Icons.badge_rounded),
+            title: Text(l10n.intercomNickname),
+            subtitle: Text(
+              settings.intercomNickname.isEmpty
+                  ? l10n.intercomNicknameHint
+                  : settings.intercomNickname,
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12.5),
+            ),
+            onTap: () => _editIntercomNickname(context, ref,
+                settings.intercomNickname),
+          ),
+          ListTile(
+            leading: const Icon(Icons.link_rounded),
+            title: Text(l10n.intercomTurn),
+            subtitle: Text(
+              settings.intercomTurnUrl.isEmpty
+                  ? l10n.intercomTurnUrl
+                  : settings.intercomTurnUrl,
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12.5),
+            ),
+            onTap: () => _editIntercomTurn(context, ref, settings),
+          ),
+          const Divider(indent: 16, endIndent: 16),
           // 数据与备份
           ListTile(
             leading: const Icon(Icons.file_upload_outlined),
@@ -134,7 +171,7 @@ class SettingsPage extends ConsumerWidget {
             leading: const Icon(Icons.info_outline_rounded),
             title: Text(l10n.about),
             subtitle: Text(
-              '${l10n.aboutDesc}\nv1.0.0',
+              '${l10n.aboutDesc}\n${l10n.tvDataSourceDesc}\nv1.0.0',
               style: TextStyle(
                 color: scheme.onSurfaceVariant,
                 fontSize: 12.5,
@@ -313,6 +350,155 @@ class SettingsPage extends ConsumerWidget {
       SnackBar(
         content: Text(host.isEmpty ? l10n.dataSourceReset : l10n.dataSourceSaved),
       ),
+    );
+  }
+
+  /// 编辑对讲信令服务器（ws:// 或 wss://；空 = 清除）。
+  Future<void> _editIntercomServer(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final l10n = context.l10n;
+    final controller = TextEditingController(text: current);
+    final url = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.intercomServerUrl),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.url,
+          decoration: InputDecoration(
+            hintText: 'ws://192.168.1.5:8090/ws',
+            helperText: l10n.intercomServerUrlHint,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              final v = controller.text.trim();
+              if (v.isNotEmpty &&
+                  !v.startsWith('ws://') &&
+                  !v.startsWith('wss://')) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.dataSourceInvalid)),
+                );
+                return;
+              }
+              Navigator.pop(context, v);
+            },
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    if (url == null) return;
+    await ref.read(settingsProvider.notifier).setIntercomServerUrl(url);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.intercomSaved)),
+    );
+  }
+
+  Future<void> _editIntercomNickname(
+    BuildContext context,
+    WidgetRef ref,
+    String current,
+  ) async {
+    final l10n = context.l10n;
+    final controller = TextEditingController(text: current);
+    final nick = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.intercomNickname),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 24,
+          decoration: InputDecoration(helperText: l10n.intercomNicknameHint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    if (nick == null) return;
+    await ref.read(settingsProvider.notifier).setIntercomNickname(nick);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.intercomSaved)),
+    );
+  }
+
+  /// 编辑 TURN 中继（三字段；URL 空 = 不启用）。
+  Future<void> _editIntercomTurn(
+    BuildContext context,
+    WidgetRef ref,
+    AppSettings current,
+  ) async {
+    final l10n = context.l10n;
+    final urlCtrl = TextEditingController(text: current.intercomTurnUrl);
+    final userCtrl = TextEditingController(text: current.intercomTurnUser);
+    final passCtrl = TextEditingController(text: current.intercomTurnPass);
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.intercomTurn),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: urlCtrl,
+              autofocus: true,
+              keyboardType: TextInputType.url,
+              decoration: InputDecoration(hintText: l10n.intercomTurnUrl),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: userCtrl,
+              decoration: InputDecoration(hintText: l10n.intercomTurnUser),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passCtrl,
+              obscureText: true,
+              decoration: InputDecoration(hintText: l10n.intercomTurnPass),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+    if (saved != true) return;
+    await ref.read(settingsProvider.notifier).setIntercomTurn(
+          url: urlCtrl.text,
+          user: userCtrl.text,
+          pass: passCtrl.text,
+        );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.intercomSaved)),
     );
   }
 }

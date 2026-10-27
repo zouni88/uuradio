@@ -135,7 +135,9 @@ class SpectrumVisualizer :
                         if (fft != null) emitBands(fft)
                     }
                 },
-                Visualizer.getMaxCaptureRate() / 2,
+                // 采集间隔 = 最快间隔 × 2（约 25Hz）：对 32 段平滑频谱足够顺滑，
+                // 同时把平台通道流量与 Dart 侧重建频率减半。
+                Visualizer.getMaxCaptureRate() * 2,
                 false,
                 true,
             )

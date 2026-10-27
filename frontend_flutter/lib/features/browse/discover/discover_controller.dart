@@ -36,6 +36,27 @@ final selectedCountryProvider =
     NotifierProvider<SelectedCountryController, String>(
         SelectedCountryController.new);
 
+/// 国家选择页使用频次（ISO 码 -> 选择次数），用于「常用国家」置顶。
+class CountryUsageController extends Notifier<Map<String, int>> {
+  @override
+  Map<String, int> build() {
+    ref.watch(settingsDsProvider).loadCountryUsage().then((usage) {
+      if (ref.mounted && state.isEmpty && usage.isNotEmpty) state = usage;
+    }).catchError((_) {});
+    return const {};
+  }
+
+  void record(String code) {
+    if (code.isEmpty) return;
+    state = {...state, code: (state[code] ?? 0) + 1};
+    ref.read(settingsDsProvider).recordCountryUsage(code).catchError((_) {});
+  }
+}
+
+final countryUsageProvider =
+    NotifierProvider<CountryUsageController, Map<String, int>>(
+        CountryUsageController.new);
+
 /// 发现页数据：热门榜单 + 分类列表。
 /// 热门跟随选中国家（默认设备国家），取该区点击量 Top 20，无数据时回退全球榜。
 final topClicksProvider = FutureProvider.autoDispose<List<Station>>(

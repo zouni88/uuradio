@@ -140,6 +140,12 @@ abstract class AppLocalizations {
   /// **'Countries'**
   String get countries;
 
+  /// No description provided for @commonCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'Common Countries'**
+  String get commonCountries;
+
   /// No description provided for @tags.
   ///
   /// In en, this message translates to:
@@ -487,6 +493,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Microphone permission denied — using simulated visualizer'**
   String get spectrumFallback;
+
+  /// No description provided for @tabIntercom.
+  ///
+  /// In en, this message translates to:
+  /// **'Intercom'**
+  String get tabIntercom;
+
+  /// No description provided for @intercomChannelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel name (e.g. road-trip)'**
+  String get intercomChannelHint;
+
+  /// No description provided for @intercomJoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Join channel'**
+  String get intercomJoin;
+
+  /// No description provided for @intercomLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get intercomLeave;
+
+  /// No description provided for @intercomMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'MEMBERS'**
+  String get intercomMembers;
+
+  /// No description provided for @intercomNoMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for members…'**
+  String get intercomNoMembers;
+
+  /// No description provided for @pttHoldToTalk.
+  ///
+  /// In en, this message translates to:
+  /// **'HOLD TO TALK'**
+  String get pttHoldToTalk;
+
+  /// No description provided for @pttRequesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Requesting floor…'**
+  String get pttRequesting;
+
+  /// No description provided for @pttTalking.
+  ///
+  /// In en, this message translates to:
+  /// **'TRANSMITTING…'**
+  String get pttTalking;
+
+  /// No description provided for @pttListening.
+  ///
+  /// In en, this message translates to:
+  /// **'{nick} is talking'**
+  String pttListening(Object nick);
+
+  /// No description provided for @pttIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Standby'**
+  String get pttIdle;
+
+  /// No description provided for @intercomNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting…'**
+  String get intercomNotConnected;
+
+  /// No description provided for @intercomServerRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the signaling server URL in Settings → Intercom first'**
+  String get intercomServerRequired;
+
+  /// No description provided for @intercomMicDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone denied — receive only'**
+  String get intercomMicDenied;
+
+  /// No description provided for @intercomRoomFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel is full (max 8)'**
+  String get intercomRoomFull;
+
+  /// No description provided for @intercomFloorBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Another member is talking'**
+  String get intercomFloorBusy;
+
+  /// No description provided for @intercomSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Intercom'**
+  String get intercomSettings;
+
+  /// No description provided for @intercomServerUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Signaling server'**
+  String get intercomServerUrl;
+
+  /// No description provided for @intercomServerUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ws:// or wss:// URL, e.g. ws://192.168.1.5:8090/ws'**
+  String get intercomServerUrlHint;
+
+  /// No description provided for @intercomNickname.
+  ///
+  /// In en, this message translates to:
+  /// **'Callsign'**
+  String get intercomNickname;
+
+  /// No description provided for @intercomNicknameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Name shown inside channels'**
+  String get intercomNicknameHint;
+
+  /// No description provided for @intercomTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'TURN relay (optional)'**
+  String get intercomTurn;
+
+  /// No description provided for @intercomTurnUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'TURN URL'**
+  String get intercomTurnUrl;
+
+  /// No description provided for @intercomTurnUser.
+  ///
+  /// In en, this message translates to:
+  /// **'TURN user'**
+  String get intercomTurnUser;
+
+  /// No description provided for @intercomTurnPass.
+  ///
+  /// In en, this message translates to:
+  /// **'TURN password'**
+  String get intercomTurnPass;
+
+  /// No description provided for @intercomSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Intercom settings saved'**
+  String get intercomSaved;
+
+  /// No description provided for @tabTv.
+  ///
+  /// In en, this message translates to:
+  /// **'TV'**
+  String get tabTv;
+
+  /// No description provided for @sectionTv.
+  ///
+  /// In en, this message translates to:
+  /// **'Live TV'**
+  String get sectionTv;
+
+  /// No description provided for @tvTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live TV'**
+  String get tvTitle;
+
+  /// No description provided for @tvAllCountries.
+  ///
+  /// In en, this message translates to:
+  /// **'All Countries'**
+  String get tvAllCountries;
+
+  /// No description provided for @tvAllGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'All Groups'**
+  String get tvAllGroups;
+
+  /// No description provided for @tvGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups'**
+  String get tvGroups;
+
+  /// No description provided for @tvSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search channels…'**
+  String get tvSearchHint;
+
+  /// No description provided for @tvLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading channels…'**
+  String get tvLoading;
+
+  /// No description provided for @tvEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No channels in this category'**
+  String get tvEmpty;
+
+  /// No description provided for @tvBuffering.
+  ///
+  /// In en, this message translates to:
+  /// **'Buffering…'**
+  String get tvBuffering;
+
+  /// No description provided for @tvSignalLost.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal lost, please retry'**
+  String get tvSignalLost;
+
+  /// No description provided for @tvGeoBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'May be geo-blocked'**
+  String get tvGeoBlocked;
+
+  /// No description provided for @tvAudioOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Car mode: audio only'**
+  String get tvAudioOnlyHint;
+
+  /// No description provided for @tvNowWatching.
+  ///
+  /// In en, this message translates to:
+  /// **'Now watching'**
+  String get tvNowWatching;
+
+  /// No description provided for @tvDataSourceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel data from the iptv-org community; link availability is not guaranteed.'**
+  String get tvDataSourceDesc;
 }
 
 class _AppLocalizationsDelegate

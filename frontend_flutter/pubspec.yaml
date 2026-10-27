@@ -26,6 +26,10 @@ dependencies:
   # 网络
   dio: ^5.11.1
 
+  # 对讲（PTT）：WebRTC 点对点语音 + 信令 WebSocket（纯 Dart）
+  flutter_webrtc: ^1.5.2
+  web_socket_channel: ^3.0.0
+
   # 本地存储
   hive_ce: ^2.22.0
   # 2.4+ 需要 Flutter ≥3.44，本机 3.38.9 钉 2.3.4
@@ -37,6 +41,10 @@ dependencies:
 
   # UI
   cached_network_image: 3.4.1
+
+  # 视频（IPTV 电视直播；注意 video_player 无鸿蒙实现）
+  # 2.12+ 需 Dart ≥3.12，本机 3.10.8 钉 2.9+ 兼容线
+  video_player: ^2.9.0
 
   # 文件
   file_picker: ^13.1.0

@@ -61,4 +61,10 @@ class BrowseCacheDs {
     });
     return _box.put(key, raw);
   }
+
+  // ---- 通用原始 JSON 字符串（如 TV 流旁路元信息） ----
+
+  String? getRaw(String key) => _box.get(key);
+
+  Future<void> putRaw(String key, String raw) => _box.put(key, raw);
 }

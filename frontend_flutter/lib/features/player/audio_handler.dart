@@ -64,6 +64,9 @@ class RadioAudioHandler extends BaseAudioHandler {
   PlaybackSnapshot _snapshot = const PlaybackSnapshot();
   int _retryAttempt = 0;
 
+  final _sessionIdCtrl = StreamController<int?>.broadcast();
+  int? _lastSessionId;
+
   static const _retryDelays = [
     Duration(seconds: 1),
     Duration(seconds: 3),
@@ -74,8 +77,12 @@ class RadioAudioHandler extends BaseAudioHandler {
   Stream<PlaybackSnapshot> get snapshotStream => _snapshotCtrl.stream;
 
   /// Android 音频会话 ID（真实频谱 Visualizer 挂载点）。
-  Stream<int?> get androidAudioSessionIdStream =>
-      _player.androidAudioSessionIdStream;
+  /// just_audio 原生流只在变化时发射；这里缓存最新值并对新订阅者立即重放，
+  /// 保证"播放中再进播放页"时频谱也能挂载当前会话。
+  Stream<int?> get androidAudioSessionIdStream async* {
+    yield _lastSessionId;
+    yield* _sessionIdCtrl.stream;
+  }
 
   /// 播放器音量（0..1）：无系统音量通道平台（iOS）上车机音量滚轮的降级数据源。
   double get playerVolume => _player.volume;
@@ -95,6 +102,10 @@ class RadioAudioHandler extends BaseAudioHandler {
     _configureAudioSession();
     _player.playerStateStream.listen(_onPlayerStateChanged);
     _player.icyMetadataStream.listen(_onIcyMetadata);
+    _player.androidAudioSessionIdStream.listen((id) {
+      _lastSessionId = id;
+      _sessionIdCtrl.add(id);
+    });
   }
 
   Future<void> _configureAudioSession() async {

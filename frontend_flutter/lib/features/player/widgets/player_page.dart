@@ -67,18 +67,19 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
     final player = ref.watch(playerProvider);
-    final visualizer = ref.watch(visualizerProvider);
     final sleepRemaining = ref.watch(sleepTimerProvider);
     final station = player.station;
 
     // 频谱权限被拒绝时提示一次。
-    ref.listen(visualizerProvider.select((s) => s.permissionDenied),
-        (prev, next) {
+    ref.listen(visualizerProvider.select((s) => s.permissionDenied), (
+      prev,
+      next,
+    ) {
       if (next && !_fallbackNotified) {
         _fallbackNotified = true;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.spectrumFallback)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.spectrumFallback)));
       }
     });
 
@@ -92,16 +93,16 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     final errorText = switch (player.errorType) {
       AppErrorType.network => l10n.errorNetwork,
       AppErrorType.timeout => l10n.errorNetwork,
-      AppErrorType.server || AppErrorType.unknown || null => player.errorType == null
-          ? null
-          : l10n.playbackError,
+      AppErrorType.server ||
+      AppErrorType.unknown ||
+      null => player.errorType == null ? null : l10n.playbackError,
     };
 
     final statusColor = player.errorType != null
         ? scheme.error
         : player.playing
-            ? scheme.primary
-            : scheme.onSurfaceVariant;
+        ? scheme.primary
+        : scheme.onSurfaceVariant;
 
     if (_deckMode) {
       return Scaffold(
@@ -115,7 +116,6 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
         l10n: l10n,
         scheme: scheme,
         player: player,
-        visualizer: visualizer,
         sleepRemaining: sleepRemaining,
         station: station,
         errorText: errorText,
@@ -134,7 +134,6 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     required AppLocalizations l10n,
     required ColorScheme scheme,
     required PlayerUiState player,
-    required VisualizerState visualizer,
     required Duration? sleepRemaining,
     required Station station,
     required String? errorText,
@@ -146,23 +145,19 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     final pages = idx >= 0 ? band : <Station>[station];
 
     // 外部切台（如车机拨台）回到本页时，同步滚动到当前台所在页。
-    ref.listen(
-      playerProvider.select((p) => p.station?.uuid),
-      (prev, next) {
-        if (next == null) return;
-        final i =
-            ref.read(tuningBandProvider).indexWhere((s) => s.uuid == next);
-        final c = _pageCtrl;
-        if (i < 0 || c == null || !c.hasClients) return;
-        if ((c.page ?? i).round() == i) return;
-        _lastPage = i;
-        c.animateToPage(
-          i,
-          duration: const Duration(milliseconds: 260),
-          curve: Curves.easeOutCubic,
-        );
-      },
-    );
+    ref.listen(playerProvider.select((p) => p.station?.uuid), (prev, next) {
+      if (next == null) return;
+      final i = ref.read(tuningBandProvider).indexWhere((s) => s.uuid == next);
+      final c = _pageCtrl;
+      if (i < 0 || c == null || !c.hasClients) return;
+      if ((c.page ?? i).round() == i) return;
+      _lastPage = i;
+      c.animateToPage(
+        i,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+      );
+    });
 
     Widget page(int i) {
       final s = pages[i];
@@ -171,7 +166,6 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
         l10n: l10n,
         scheme: scheme,
         player: player,
-        visualizer: visualizer,
         sleepRemaining: sleepRemaining,
         errorText: errorText,
         statusColor: statusColor,
@@ -218,7 +212,6 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     required AppLocalizations l10n,
     required ColorScheme scheme,
     required PlayerUiState player,
-    required VisualizerState visualizer,
     required Duration? sleepRemaining,
     required String? errorText,
     required Color statusColor,
@@ -226,7 +219,6 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     required bool isActive,
   }) {
     final effPlayer = isActive ? player : PlayerUiState(station: station);
-    final effVisualizer = isActive ? visualizer : const VisualizerState();
     final effSleep = isActive ? sleepRemaining : null;
     final effError = isActive ? errorText : null;
     final effStatusColor = isActive ? statusColor : scheme.onSurfaceVariant;
@@ -239,8 +231,10 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
           Positioned.fill(
             child: ImageFiltered(
               imageFilter: ui.ImageFilter.blur(sigmaX: 28, sigmaY: 28),
-              child: Image.network(
-                station.logoUrl,
+              child: Image(
+                // ResizeImage 降采样解码：sigma 28 模糊下 240px 宽与
+                // 全分辨率视觉无差，但解码内存与解码耗时大幅降低。
+                image: ResizeImage(NetworkImage(station.logoUrl), width: 240),
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
@@ -268,15 +262,16 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
               // 避免溢出（FittedBox 给子节点无界高度，故先固定宽度）。
               final tall = constraints.maxHeight >= _kPortraitMinTall;
               final logoSize = tall
-                  ? (constraints.maxHeight - _kPortraitOther)
-                      .clamp(120.0, 214.0)
+                  ? (constraints.maxHeight - _kPortraitOther).clamp(
+                      120.0,
+                      214.0,
+                    )
                   : 160.0;
               final groups = _portraitGroups(
                 context,
                 l10n: l10n,
                 scheme: scheme,
                 player: effPlayer,
-                visualizer: effVisualizer,
                 sleepRemaining: effSleep,
                 station: station,
                 errorText: effError,
@@ -329,7 +324,6 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     required AppLocalizations l10n,
     required ColorScheme scheme,
     required PlayerUiState player,
-    required VisualizerState visualizer,
     required Duration? sleepRemaining,
     required Station station,
     required String? errorText,
@@ -345,14 +339,12 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
         Row(
           children: [
             IconButton(
-              icon:
-                  const Icon(Icons.keyboard_arrow_down_rounded, size: 30),
+              icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 30),
               onPressed: () => Navigator.of(context).pop(),
             ),
             const Spacer(),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
@@ -432,10 +424,9 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
           maxLines: 2,
           textAlign: TextAlign.center,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context)
-              .textTheme
-              .headlineSmall
-              ?.copyWith(color: scheme.onSurface),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(color: scheme.onSurface),
         ),
         const SizedBox(height: 8),
         Text(
@@ -455,21 +446,28 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
           ),
         ),
         const SizedBox(height: 20),
-        // 频谱
+        // 频谱：当前页才订阅频谱流（重建被限制在这 300x60 子树），
+        // 其他页显示静态待机频谱。
         SizedBox(
           width: 300,
           height: 60,
-          child: CustomPaint(
-            painter: SpectrumPainter(
-              bands: visualizer.bands.isEmpty
-                  ? const <double>[]
-                  : visualizer.bands,
-              color: scheme.primary,
-              secondary: scheme.secondary,
-              playing: player.playing,
-            ),
-            child: const SizedBox.expand(),
-          ),
+          child: isActive
+              ? _SpectrumView(
+                  playing: player.playing,
+                  color: scheme.primary,
+                  secondary: scheme.secondary,
+                )
+              : RepaintBoundary(
+                  child: CustomPaint(
+                    painter: SpectrumPainter(
+                      bands: const <double>[],
+                      color: scheme.primary,
+                      secondary: scheme.secondary,
+                      playing: false,
+                    ),
+                    child: const SizedBox.expand(),
+                  ),
+                ),
         ),
         const SizedBox(height: 14),
         // 状态行
@@ -479,10 +477,10 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
             player.loading
                 ? l10n.connecting
                 : player.playing
-                    ? (player.icyTitle != null
-                        ? l10n.nowBroadcasting(player.icyTitle!)
-                        : l10n.nowPlaying)
-                    : (errorText ?? l10n.paused),
+                ? (player.icyTitle != null
+                      ? l10n.nowBroadcasting(player.icyTitle!)
+                      : l10n.nowPlaying)
+                : (errorText ?? l10n.paused),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
@@ -524,11 +522,7 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
           )
         else
           Center(
-            child: PlayButton(
-              player: player,
-              station: station,
-              onTap: onPlay,
-            ),
+            child: PlayButton(player: player, station: station, onTap: onPlay),
           ),
         const SizedBox(height: 8),
         // 主页链接
@@ -544,6 +538,38 @@ class _PlayerPageState extends ConsumerState<PlayerPage> {
     );
 
     return [top, mid, bottom];
+  }
+}
+
+/// 频谱视图：全页唯一订阅 visualizerProvider 的子树。
+/// 频谱帧（约 25Hz）只重建这个 300x60 区域，重建不再波及整页
+/// （模糊背景/霓虹投影/控制区都不再跟着每帧重建）；
+/// RepaintBoundary 再把重绘隔离，避免每帧全屏幕层重画。
+class _SpectrumView extends ConsumerWidget {
+  const _SpectrumView({
+    required this.playing,
+    required this.color,
+    required this.secondary,
+  });
+
+  final bool playing;
+  final Color color;
+  final Color secondary;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bands = ref.watch(visualizerProvider.select((s) => s.bands));
+    return RepaintBoundary(
+      child: CustomPaint(
+        painter: SpectrumPainter(
+          bands: bands,
+          color: color,
+          secondary: secondary,
+          playing: playing,
+        ),
+        child: const SizedBox.expand(),
+      ),
+    );
   }
 }
 

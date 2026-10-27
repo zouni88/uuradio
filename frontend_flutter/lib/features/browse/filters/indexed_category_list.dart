@@ -209,15 +209,18 @@ class _IndexedCategoryListState extends State<IndexedCategoryList> {
     return (code >= 65 && code <= 90) ? upper : '#';
   }
 
-  static String _flagEmoji(BrowseCategory c) {
-    final code = c.isoCode ?? '';
-    if (code.length != 2) return '🌍';
-    final base = 0x1F1E6;
-    final a = code.toUpperCase().codeUnitAt(0) - 65;
-    final b = code.toUpperCase().codeUnitAt(1) - 65;
-    if (a < 0 || a > 25 || b < 0 || b > 25) return '🌍';
-    return String.fromCharCode(base + a) + String.fromCharCode(base + b);
-  }
+  static String _flagEmoji(BrowseCategory c) => countryFlagEmoji(c);
+}
+
+/// ISO 码转国旗 emoji；无有效码时显示地球。
+String countryFlagEmoji(BrowseCategory c) {
+  final code = c.isoCode ?? '';
+  if (code.length != 2) return '🌍';
+  final base = 0x1F1E6;
+  final a = code.toUpperCase().codeUnitAt(0) - 65;
+  final b = code.toUpperCase().codeUnitAt(1) - 65;
+  if (a < 0 || a > 25 || b < 0 || b > 25) return '🌍';
+  return String.fromCharCode(base + a) + String.fromCharCode(base + b);
 }
 
 /// 右侧字母索引条：支持点按与上下滑动定位。

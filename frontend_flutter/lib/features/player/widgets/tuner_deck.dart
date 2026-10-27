@@ -8,7 +8,11 @@ import '../../../core/audio/volume_control.dart';
 import '../../../core/error/app_exception.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/station_logo.dart';
+import '../../../data/dto/iptv_dto.dart';
+import '../../../data/providers.dart';
+import '../../../domain/models/station.dart';
 import '../../../l10n_helper.dart';
+import '../../browse/discover/discover_controller.dart';
 import '../player_controller.dart';
 import '../visualizer_controller.dart';
 import 'player_widgets.dart';
@@ -34,7 +38,7 @@ class TunerDeck extends ConsumerStatefulWidget {
 }
 
 class _TunerDeckState extends ConsumerState<TunerDeck>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   static const Duration _alignDuration = Duration(milliseconds: 260);
 
   /// 滑轨偏移：单位 = 电台槽位（double），中心指针处的槽位值。
@@ -59,17 +63,17 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
   );
   Tween<double>? _tween;
 
-  /// 波形相位：持续流动，让合成波形线"活"起来。
-  late final AnimationController _wave = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 3),
-  )..repeat();
-
   /// 媒体音量（右下滚轮）。原生系统音量通道不可用时降级为播放器音量，
   /// 滚轮始终可动；仅两者都不可用才置灰（实际不存在这种情况）。
   int _volume = 0;
   int _maxVolume = 15;
   bool _nativeVolume = false;
+
+  /// BAND 键：电台波段 ↔ TV 波段切换。车机横屏无视频画面（驾驶安全 +
+  /// video_player 无鸿蒙/无车机 surface），TV 频道走 just_audio 播 m3u8
+  /// 音频轨；个别纯视频流无声、需自定义 Referer 的流会失败（已知限制）。
+  List<Station>? _savedRadioBand;
+  bool _tvBandLoading = false;
 
   @override
   void initState() {
@@ -176,7 +180,6 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
   void dispose() {
     _presetsCtrl.removeListener(_onPresetsScroll);
     _presetsCtrl.dispose();
-    _wave.dispose();
     _align.dispose();
     super.dispose();
   }
@@ -212,6 +215,36 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
     Navigator.of(context).pop();
   }
 
+  bool _isTvBandOf(List<Station> band) =>
+      band.isNotEmpty && isIptvStation(band.first);
+
+  /// BAND 键：电台波段 ↔ TV 波段（选中国家，固定列表；tune/play 链路零改动）。
+  Future<void> _toggleBand() async {
+    if (_tvBandLoading) return;
+    final ctrl = ref.read(tuningBandProvider.notifier);
+    if (_isTvBandOf(ref.read(tuningBandProvider))) {
+      final saved = _savedRadioBand;
+      if (saved != null) ctrl.set(saved);
+      return;
+    }
+    _savedRadioBand = ref.read(tuningBandProvider);
+    setState(() => _tvBandLoading = true);
+    try {
+      final code = effectiveCountryCode(
+        ref.read(selectedCountryProvider),
+      ).toUpperCase();
+      final tv = await ref
+          .read(iptvRepositoryProvider)
+          .channels(countryCode: code);
+      if (!mounted || tv.isEmpty) return;
+      ctrl.set(tv);
+    } catch (_) {
+      // 加载失败：保持当前电台波段。
+    } finally {
+      if (mounted) setState(() => _tvBandLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -219,7 +252,6 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
     final player = ref.watch(playerProvider);
     final band = ref.watch(tuningBandProvider);
     final pending = ref.watch(tunerProvider);
-    final visualizer = ref.watch(visualizerProvider);
     final station = player.station;
 
     final bandIdx = station == null
@@ -296,23 +328,42 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
                       onTap: _stopAll,
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      'BAND',
-                      style: TextStyle(
-                        fontFamily: AppTheme.fontMono,
-                        fontSize: 9,
-                        letterSpacing: 2,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${bandIdx < 0 ? '--' : (bandIdx + 1).toString().padLeft(2, '0')}/${band.length}',
-                      style: TextStyle(
-                        fontFamily: AppTheme.fontMono,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: scheme.primary,
+                    Tooltip(
+                      message: l10n.tvAudioOnlyHint,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: _toggleBand,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                _isTvBandOf(band) ? 'BAND·TV' : 'BAND',
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontMono,
+                                  fontSize: 9,
+                                  letterSpacing: 2,
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                _tvBandLoading
+                                    ? '··'
+                                    : '${bandIdx < 0 ? '--' : (bandIdx + 1).toString().padLeft(2, '0')}/${band.length}',
+                                style: TextStyle(
+                                  fontFamily: AppTheme.fontMono,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: scheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -387,18 +438,11 @@ class _TunerDeckState extends ConsumerState<TunerDeck>
                           ),
                           child: SizedBox(
                             height: 34,
-                            child: AnimatedBuilder(
-                              animation: _wave,
-                              builder: (context, _) => CustomPaint(
-                                painter: _WaveformPainter(
-                                  bands: visualizer.bands,
-                                  t: _wave.value,
-                                  playing: player.playing,
-                                  color: scheme.primary,
-                                ),
-                                // 无 child 的 CustomPaint 在松约束下塌缩为 0。
-                                child: const SizedBox.expand(),
-                              ),
+                            // 波形独立订阅频谱流，重建/重绘都被限制在
+                            // 这条 34px 高的子树，不再牵动整个车机页。
+                            child: _DeckWaveform(
+                              playing: player.playing,
+                              color: scheme.primary,
                             ),
                           ),
                         ),
@@ -1168,6 +1212,72 @@ class _ScalePainter extends CustomPainter {
       oldDelegate.offset != offset ||
       oldDelegate.count != count ||
       oldDelegate.scheme != scheme;
+}
+
+/// 车机波形：全页唯一订阅 visualizerProvider 的子树。
+/// 自带流动相位 ticker，频谱帧只重建这条 34px 高的波形带；
+/// RepaintBoundary 把每帧重绘（含 MaskFilter 辉光）隔离在本子树。
+class _DeckWaveform extends ConsumerStatefulWidget {
+  const _DeckWaveform({required this.playing, required this.color});
+
+  final bool playing;
+  final Color color;
+
+  @override
+  ConsumerState<_DeckWaveform> createState() => _DeckWaveformState();
+}
+
+class _DeckWaveformState extends ConsumerState<_DeckWaveform>
+    with SingleTickerProviderStateMixin {
+  /// 波形相位：播放中持续流动，让合成波形线"活"起来；
+  /// 暂停即停（省电：不再 60fps 重绘这条辉光路径）。
+  late final AnimationController _wave = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 3),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.playing) _wave.repeat();
+  }
+
+  @override
+  void didUpdateWidget(_DeckWaveform oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.playing == widget.playing) return;
+    if (widget.playing) {
+      if (!_wave.isAnimating) _wave.repeat();
+    } else {
+      _wave.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _wave.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bands = ref.watch(visualizerProvider.select((s) => s.bands));
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: _wave,
+        builder: (context, _) => CustomPaint(
+          painter: _WaveformPainter(
+            bands: bands,
+            t: _wave.value,
+            playing: widget.playing,
+            color: widget.color,
+          ),
+          // 无 child 的 CustomPaint 在松约束下塌缩为 0。
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+  }
 }
 
 /// 音频波形：车载功放 VU 表感——单条青色背光细线随音乐能量起伏。
