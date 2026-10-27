@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780" viewBox="0 0 360 780">
+  <defs>
+    <radialGradient id="art" cx="0.35" cy="0.3" r="1">
+      <stop offset="0" stop-color="#00E5FF"/><stop offset="0.45" stop-color="#0A3D6E"/><stop offset="1" stop-color="#0A0F1C"/>
+    </radialGradient>
+    <linearGradient id="pgrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00E5FF"/><stop offset="1" stop-color="#FF2A6D"/>
+    </linearGradient>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M30 0H0V30" fill="none" stroke="#1C2942" stroke-width="0.7" opacity="0.4"/>
+    </pattern>
+  </defs>
+
+  <rect width="360" height="780" rx="18" fill="#05070D"/>
+  <rect width="360" height="780" rx="18" fill="url(#grid)"/>
+  <rect x="0.75" y="0.75" width="358.5" height="778.5" rx="18" fill="none" stroke="#2C3D5E" stroke-width="1.5"/>
+  <ellipse cx="180" cy="300" rx="190" ry="130" fill="#00E5FF" opacity="0.06"/>
+
+  <!-- status bar -->
+  <text x="18" y="22" font-family="Consolas, monospace" font-size="12" fill="#DCF3FF">21:37</text>
+  <g fill="#DCF3FF">
+    <rect x="292" y="14" width="3" height="4"/><rect x="297" y="12" width="3" height="6"/><rect x="302" y="10" width="3" height="8"/><rect x="307" y="8" width="3" height="10"/>
+    <path d="M322 16 a7 7 0 0 1 10 0 l-5 5 z"/>
+    <rect x="338" y="9" width="14" height="8" rx="2" fill="none" stroke="#DCF3FF"/><rect x="340" y="11" width="8" height="4"/>
+  </g>
+
+  <!-- top bar -->
+  <path d="M22 40 l7 7 -7 7" fill="none" stroke="#8CA3C3" stroke-width="2" transform="rotate(90 25.5 47)"/>
+  <text x="180" y="51" text-anchor="middle" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="13" font-weight="700" letter-spacing="3" fill="#8CA3C3">NOW PLAYING</text>
+  <g stroke="#8CA3C3" stroke-width="2"><circle cx="336" cy="44" r="1.4" fill="#8CA3C3"/><circle cx="336" cy="50" r="1.4" fill="#8CA3C3"/><circle cx="336" cy="56" r="1.4" fill="#8CA3C3"/></g>
+
+  <!-- artwork -->
+  <g filter="url(#g)">
+    <rect x="80" y="96" width="200" height="200" rx="24" fill="url(#art)" stroke="#00E5FF" stroke-opacity="0.7" stroke-width="1.5"/>
+  </g>
+  <path d="M 60 196 a 120 120 0 0 1 74 -110" fill="none" stroke="#00E5FF" stroke-width="2.5" stroke-dasharray="140 80" opacity="0.8"/>
+  <path d="M 300 196 a 120 120 0 0 1 -74 110" fill="none" stroke="#FF2A6D" stroke-width="2.5" stroke-dasharray="120 90" opacity="0.8"/>
+  <!-- vinyl -->
+  <g transform="translate(180 196)">
+    <circle r="62" fill="#04060C" opacity="0.6"/>
+    <circle r="62" fill="none" stroke="#00E5FF" stroke-opacity="0.35"/>
+    <circle r="46" fill="none" stroke="#00E5FF" stroke-opacity="0.18"/>
+    <circle r="30" fill="none" stroke="#00E5FF" stroke-opacity="0.25"/>
+    <circle r="16" fill="url(#pgrad)" opacity="0.9"/>
+    <circle r="4" fill="#04060C"/>
+  </g>
+
+  <!-- station info -->
+  <text x="180" y="348" text-anchor="middle" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="24" font-weight="800" letter-spacing="1" fill="#DCF3FF">CHILLWAVE FM</text>
+  <text x="180" y="372" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12.5" fill="#8CA3C3">电子 &#183; 氛围 &#183; 德国</text>
+  <text x="180" y="396" text-anchor="middle" font-family="Consolas, monospace" font-size="11" letter-spacing="2" fill="#00E5FF" filter="url(#g)">128 KBPS &#183; AAC &#183; STEREO &#183; ONLINE</text>
+
+  <!-- spectrum -->
+  <g fill="url(#pgrad)">
+    <rect x="88" y="470" width="7" height="22" rx="2" opacity="0.8"/><rect x="101" y="458" width="7" height="34" rx="2"/><rect x="114" y="444" width="7" height="48" rx="2"/><rect x="127" y="436" width="7" height="56" rx="2"/><rect x="140" y="448" width="7" height="44" rx="2"/><rect x="153" y="428" width="7" height="64" rx="2"/><rect x="166" y="440" width="7" height="52" rx="2"/><rect x="179" y="420" width="7" height="72" rx="2"/><rect x="192" y="434" width="7" height="58" rx="2"/><rect x="205" y="446" width="7" height="46" rx="2"/><rect x="218" y="430" width="7" height="62" rx="2"/><rect x="231" y="442" width="7" height="50" rx="2"/><rect x="244" y="454" width="7" height="38" rx="2"/><rect x="257" y="462" width="7" height="30" rx="2"/>
+  </g>
+  <line x1="80" y1="494" x2="280" y2="494" stroke="#2C3D5E"/>
+
+  <!-- progress -->
+  <text x="40" y="530" font-family="Consolas, monospace" font-size="11" fill="#8CA3C3">00:42</text>
+  <rect x="86" y="524" width="188" height="4" rx="2" fill="#1A2545"/>
+  <rect x="86" y="524" width="52" height="4" rx="2" fill="url(#pgrad)"/>
+  <circle cx="138" cy="526" r="5" fill="#00E5FF" filter="url(#g)"/>
+  <text x="320" y="530" text-anchor="end" font-family="Consolas, monospace" font-size="11" fill="#00E5FF">LIVE</text>
+
+  <!-- controls -->
+  <g>
+    <path d="M74 588 l-14 10 14 10 M60 598 h18" fill="none" stroke="#8CA3C3" stroke-width="2"/>
+    <circle cx="128" cy="598" r="17" fill="none" stroke="#8CA3C3" stroke-width="1.6"/>
+    <path d="M123 591 l14 7 -14 7 z" fill="#8CA3C3"/>
+    <circle cx="180" cy="598" r="38" fill="none" stroke="url(#pgrad)" stroke-width="3" filter="url(#g)"/>
+    <circle cx="180" cy="598" r="31" fill="#0A0F1C" stroke="#00E5FF" stroke-opacity="0.5"/>
+    <rect x="171" y="586" width="6" height="24" rx="2" fill="#00E5FF"/><rect x="184" y="586" width="6" height="24" rx="2" fill="#00E5FF"/>
+    <circle cx="232" cy="598" r="17" fill="none" stroke="#8CA3C3" stroke-width="1.6"/>
+    <path d="M229 591 l14 7 -14 7 z" fill="#8CA3C3"/>
+    <path d="M286 588 l14 10 -14 10 M300 598 h-18" fill="none" stroke="#8CA3C3" stroke-width="2"/>
+  </g>
+
+  <!-- secondary actions -->
+  <g text-anchor="middle" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">
+    <g stroke="#FF2A6D" fill="#FF2A6D">
+      <path d="M96 668 c-5 -5 -13 -1 -13 5 c0 5 7 10 13 15 c6 -5 13 -10 13 -15 c0 -6 -8 -9 -13 -5 z" filter="url(#g)"/>
+    </g>
+    <text x="96" y="702" fill="#FF2A6D">已收藏</text>
+    <g stroke="#8CA3C3" fill="none" stroke-width="1.6">
+      <path d="M172 660 a10 10 0 0 1 0 20 a10 10 0 0 1 0 -20 M172 664 a6 6 0 0 1 0 12" />
+      <rect x="169" y="656" width="6" height="12" rx="2" fill="#8CA3C3" stroke="none"/>
+      <path d="M186 663 a14 14 0 0 1 0 14 M180 660 a18 18 0 0 1 0 20" opacity="0.9"/>
+    </g>
+    <text x="180" y="702">外放</text>
+    <g stroke="#8CA3C3" fill="none" stroke-width="1.6">
+      <path d="M258 656 a10 10 0 1 0 0.1 0"/>
+      <path d="M258 648 v8 M251 642 l4 5 M265 642 l-4 5"/>
+    </g>
+    <text x="258" y="702">定时</text>
+  </g>
+
+  <!-- swipe hint -->
+  <path d="M180 736 v18 M174 748 l6 8 6 -8" stroke="#8CA3C3" stroke-width="1.6" fill="none" opacity="0.7"/>
+  <text x="180" y="768" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="#8CA3C3" opacity="0.7">上下滑动切换电台</text>
+</svg>

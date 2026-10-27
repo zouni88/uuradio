@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780" viewBox="0 0 360 780">
+  <defs>
+    <linearGradient id="vid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0D2B4E"/><stop offset="0.6" stop-color="#0A0F1C"/><stop offset="1" stop-color="#3A0B18"/>
+    </linearGradient>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="360" height="780" rx="18" fill="#05070D"/>
+  <rect x="0.75" y="0.75" width="358.5" height="778.5" rx="18" fill="none" stroke="#2C3D5E" stroke-width="1.5"/>
+
+  <!-- status bar -->
+  <text x="18" y="22" font-family="Consolas, monospace" font-size="12" fill="#DCF3FF">21:37</text>
+  <g fill="#DCF3FF">
+    <rect x="292" y="14" width="3" height="4"/><rect x="297" y="12" width="3" height="6"/><rect x="302" y="10" width="3" height="8"/><rect x="307" y="8" width="3" height="10"/>
+    <path d="M322 16 a7 7 0 0 1 10 0 l-5 5 z"/>
+    <rect x="338" y="9" width="14" height="8" rx="2" fill="none" stroke="#DCF3FF"/><rect x="340" y="11" width="8" height="4"/>
+  </g>
+
+  <!-- app bar -->
+  <text x="16" y="58" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="22" font-weight="800" letter-spacing="1" fill="#00E5FF" filter="url(#g)">IPTV</text>
+  <circle cx="322" cy="50" r="8" fill="none" stroke="#8CA3C3" stroke-width="1.8"/><line x1="328" y1="56" x2="335" y2="63" stroke="#8CA3C3" stroke-width="1.8"/>
+  <line x1="0" y1="76" x2="360" y2="76" stroke="#1C2942"/>
+
+  <!-- video card -->
+  <rect x="14" y="92" width="332" height="200" rx="14" fill="url(#vid)" stroke="#00E5FF" stroke-opacity="0.5"/>
+  <!-- fake broadcast scene -->
+  <g opacity="0.85">
+    <circle cx="150" cy="170" r="46" fill="#FCEE0A" opacity="0.12"/>
+    <circle cx="150" cy="170" r="28" fill="#FCEE0A" opacity="0.14"/>
+    <rect x="216" y="196" width="90" height="60" rx="4" fill="#121B30"/>
+    <rect x="224" y="204" width="74" height="3" fill="#8CA3C3" opacity="0.6"/>
+    <rect x="224" y="212" width="60" height="3" fill="#8CA3C3" opacity="0.4"/>
+    <rect x="224" y="220" width="66" height="3" fill="#8CA3C3" opacity="0.4"/>
+    <rect x="224" y="228" width="48" height="3" fill="#8CA3C3" opacity="0.4"/>
+    <rect x="224" y="236" width="70" height="3" fill="#8CA3C3" opacity="0.4"/>
+    <line x1="30" y1="248" x2="150" y2="248" stroke="#00E5FF" opacity="0.25"/>
+    <line x1="30" y1="258" x2="120" y2="258" stroke="#00E5FF" opacity="0.18"/>
+  </g>
+  <!-- LIVE badge -->
+  <rect x="26" y="104" width="52" height="22" rx="6" fill="#FF2A6D" filter="url(#g)"/>
+  <circle cx="38" cy="115" r="3.5" fill="#04060C"/>
+  <text x="58" y="119" text-anchor="middle" font-family="Consolas, monospace" font-size="11" font-weight="700" fill="#04060C">LIVE</text>
+  <text x="330" y="119" text-anchor="end" font-family="Consolas, monospace" font-size="10" fill="#DCF3FF" opacity="0.85">1080P &#183; 60FPS</text>
+  <!-- player controls overlay -->
+  <g>
+    <rect x="14" y="244" width="332" height="48" fill="#04060C" opacity="0.45"/>
+    <path d="M34 258 l10 6 -10 6 z M44 258 l10 6 -10 6 z" fill="#DCF3FF"/>
+    <path d="M300 258 l8 6 -8 6 z" fill="#DCF3FF"/><rect x="294" y="258" width="4" height="12" fill="#DCF3FF"/>
+    <rect x="80" y="276" width="200" height="3" rx="1.5" fill="#1A2545"/>
+    <rect x="80" y="276" width="120" height="3" rx="1.5" fill="#00E5FF"/>
+    <circle cx="200" cy="277.5" r="4" fill="#00E5FF"/>
+    <text x="80" y="272" font-family="Consolas, monospace" font-size="8.5" fill="#8CA3C3">12:34:05</text>
+    <text x="280" y="272" text-anchor="end" font-family="Consolas, monospace" font-size="8.5" fill="#8CA3C3">CH 01</text>
+  </g>
+  <text x="14" y="312" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="700" fill="#DCF3FF">CCTV-1 综合</text>
+  <text x="346" y="312" text-anchor="end" font-family="Consolas, monospace" font-size="10" fill="#8CA3C3">M3U8 &#183; 8.2 Mbps</text>
+
+  <!-- section -->
+  <rect x="16" y="334" width="4" height="16" rx="2" fill="#00E5FF"/>
+  <text x="28" y="348" font-family="'Segoe UI', Arial, sans-serif" font-size="16" font-weight="700" fill="#DCF3FF">全部频道</text>
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="11" text-anchor="middle">
+    <rect x="230" y="332" width="34" height="20" rx="7" fill="#121B30" stroke="#2C3D5E"/><text x="247" y="346" fill="#8CA3C3">央视</text>
+    <rect x="270" y="332" width="34" height="20" rx="7" fill="#121B30" stroke="#2C3D5E"/><text x="287" y="346" fill="#8CA3C3">卫视</text>
+    <rect x="310" y="332" width="34" height="20" rx="7" fill="#00E5FF" opacity="0.18" stroke="#00E5F4" stroke-opacity="0"/><rect x="310" y="332" width="34" height="20" rx="7" fill="#00E5FF" fill-opacity="0.15" stroke="#00E5FF"/><text x="327" y="346" fill="#00E5FF" font-weight="700">地方</text>
+  </g>
+
+  <!-- channel rows -->
+  <g font-family="'Segoe UI', Arial, sans-serif">
+    <g>
+      <rect x="16" y="362" width="328" height="52" rx="10" fill="#0A0F1C" stroke="#00E5FF" stroke-opacity="0.55"/>
+      <text x="32" y="394" font-family="Consolas, monospace" font-size="15" font-weight="700" fill="#00E5FF">01</text>
+      <text x="62" y="384" font-size="13.5" font-weight="600" fill="#DCF3FF">CCTV-1 综合</text>
+      <text x="62" y="402" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">http &#183; hls &#183; 央视源</text>
+      <rect x="272" y="376" width="42" height="18" rx="5" fill="none" stroke="#00E5FF"/><text x="293" y="389" text-anchor="middle" font-family="Consolas, monospace" font-size="9" fill="#00E5FF">1080P</text>
+      <circle cx="330" cy="388" r="9" fill="#00E5FF" opacity="0.15"/><circle cx="330" cy="388" r="2.5" fill="#00E5FF"/>
+    </g>
+    <g>
+      <rect x="16" y="422" width="328" height="52" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="32" y="454" font-family="Consolas, monospace" font-size="15" font-weight="700" fill="#8CA3C3">02</text>
+      <text x="62" y="444" font-size="13.5" font-weight="600" fill="#DCF3FF">CCTV-5 体育</text>
+      <text x="62" y="462" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">http &#183; hls &#183; 央视源</text>
+      <rect x="272" y="436" width="42" height="18" rx="5" fill="none" stroke="#8CA3C3"/><text x="293" y="449" text-anchor="middle" font-family="Consolas, monospace" font-size="9" fill="#8CA3C3">720P</text>
+      <circle cx="330" cy="448" r="9" fill="none" stroke="#8CA3C3"/><path d="M327 444 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+    <g>
+      <rect x="16" y="482" width="328" height="52" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="32" y="514" font-family="Consolas, monospace" font-size="15" font-weight="700" fill="#8CA3C3">03</text>
+      <text x="62" y="504" font-size="13.5" font-weight="600" fill="#DCF3FF">东方卫视</text>
+      <text x="62" y="522" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">http &#183; hls &#183; 卫视源</text>
+      <rect x="272" y="496" width="42" height="18" rx="5" fill="none" stroke="#8CA3C3"/><text x="293" y="509" text-anchor="middle" font-family="Consolas, monospace" font-size="9" fill="#8CA3C3">1080P</text>
+      <circle cx="330" cy="508" r="9" fill="none" stroke="#8CA3C3"/><path d="M327 504 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+    <g>
+      <rect x="16" y="542" width="328" height="52" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="32" y="574" font-family="Consolas, monospace" font-size="15" font-weight="700" fill="#8CA3C3">04</text>
+      <text x="62" y="564" font-size="13.5" font-weight="600" fill="#DCF3FF">湖南卫视</text>
+      <text x="62" y="582" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">http &#183; hls &#183; 卫视源</text>
+      <rect x="272" y="556" width="42" height="18" rx="5" fill="none" stroke="#8CA3C3"/><text x="293" y="569" text-anchor="middle" font-family="Consolas, monospace" font-size="9" fill="#8CA3C3">720P</text>
+      <circle cx="330" cy="568" r="9" fill="none" stroke="#8CA3C3"/><path d="M327 564 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+    <g>
+      <rect x="16" y="602" width="328" height="52" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="32" y="634" font-family="Consolas, monospace" font-size="15" font-weight="700" fill="#8CA3C3">05</text>
+      <text x="62" y="624" font-size="13.5" font-weight="600" fill="#DCF3FF">广东珠江频道</text>
+      <text x="62" y="642" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">http &#183; flv &#183; 地方源</text>
+      <rect x="272" y="616" width="42" height="18" rx="5" fill="none" stroke="#8CA3C3"/><text x="293" y="629" text-anchor="middle" font-family="Consolas, monospace" font-size="9" fill="#8CA3C3">576P</text>
+      <circle cx="330" cy="628" r="9" fill="none" stroke="#8CA3C3"/><path d="M327 624 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+  </g>
+
+  <!-- mini player -->
+  <g>
+    <rect x="0" y="688" width="360" height="56" fill="#121B30"/>
+    <line x1="0" y1="688" x2="360" y2="688" stroke="#00E5FF" stroke-opacity="0.4"/>
+    <rect x="12" y="698" width="36" height="36" rx="8" fill="#0D2B4E" stroke="#00E5FF" stroke-opacity="0.5"/>
+    <text x="60" y="712" font-family="'Segoe UI', Arial, sans-serif" font-size="12.5" font-weight="600" fill="#DCF3FF">CCTV-1 综合</text>
+    <text x="60" y="728" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">正在播放 &#183; 1080P</text>
+    <circle cx="316" cy="716" r="14" fill="none" stroke="#00E5FF" stroke-width="1.6"/>
+    <rect x="311" y="710" width="3.5" height="12" rx="1" fill="#00E5FF"/><rect x="318" y="710" width="3.5" height="12" rx="1" fill="#00E5FF"/>
+  </g>
+
+  <!-- bottom nav -->
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="10" text-anchor="middle">
+    <rect x="0" y="744" width="360" height="36" fill="#070B14"/>
+    <path d="M30 749 l7 7 -7 7 -7 -7 z" fill="none" stroke="#8CA3C3"/>
+    <text x="30" y="776" fill="#8CA3C3">发现</text>
+    <rect x="72" y="746" width="36" height="18" rx="9" fill="#00E5FF" opacity="0.14"/>
+    <rect x="80" y="750" width="20" height="13" rx="2" fill="none" stroke="#00E5FF" stroke-width="1.5"/>
+    <path d="M88 754 l5 2.5 -5 2.5 z" fill="#00E5FF"/>
+    <text x="90" y="776" fill="#00E5FF" font-weight="700">电视</text>
+    <circle cx="150" cy="756" r="7" fill="none" stroke="#8CA3C3" stroke-width="1.6"/><line x1="155" y1="761" x2="159" y2="765" stroke="#8CA3C3" stroke-width="1.6"/>
+    <text x="150" y="776" fill="#8CA3C3">搜索</text>
+    <path d="M208 750 c-3 -3 -8 -1 -8 3 c0 3 4 6 8 9 c4 -3 8 -6 8 -9 c0 -4 -5 -6 -8 -3 z" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="210" y="776" fill="#8CA3C3">收藏</text>
+    <rect x="266" y="749" width="9" height="14" rx="4" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M278 753 a8 8 0 0 1 0 7" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="272" y="776" fill="#8CA3C3">对讲</text>
+    <circle cx="328" cy="756" r="6.5" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><circle cx="328" cy="756" r="2" fill="#8CA3C3"/><path d="M328 747 v3 M328 762 v3 M319 756 h3 M334 756 h3" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="328" y="776" fill="#8CA3C3">设置</text>
+  </g>
+</svg>

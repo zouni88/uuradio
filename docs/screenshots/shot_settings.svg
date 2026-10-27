@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780" viewBox="0 0 360 780">
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="360" height="780" rx="18" fill="#05070D"/>
+  <rect x="0.75" y="0.75" width="358.5" height="778.5" rx="18" fill="none" stroke="#2C3D5E" stroke-width="1.5"/>
+
+  <!-- status bar -->
+  <text x="18" y="22" font-family="Consolas, monospace" font-size="12" fill="#DCF3FF">21:37</text>
+  <g fill="#DCF3FF">
+    <rect x="292" y="14" width="3" height="4"/><rect x="297" y="12" width="3" height="6"/><rect x="302" y="10" width="3" height="8"/><rect x="307" y="8" width="3" height="10"/>
+    <path d="M322 16 a7 7 0 0 1 10 0 l-5 5 z"/>
+    <rect x="338" y="9" width="14" height="8" rx="2" fill="none" stroke="#DCF3FF"/><rect x="340" y="11" width="8" height="4"/>
+  </g>
+
+  <!-- app bar -->
+  <text x="16" y="58" font-family="'Segoe UI', Arial, sans-serif" font-size="22" font-weight="800" fill="#DCF3FF">设置</text>
+  <line x1="0" y1="76" x2="360" y2="76" stroke="#1C2942"/>
+
+  <!-- accent palette -->
+  <text x="16" y="104" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">霓虹主题色</text>
+  <g>
+    <circle cx="34" cy="134" r="14" fill="#00E5FF"/>
+    <circle cx="34" cy="134" r="18" fill="none" stroke="#00E5FF" stroke-width="2" opacity="0.6" filter="url(#g)"/>
+    <path d="M27 134 l5 5 9 -10" stroke="#04060C" stroke-width="2.5" fill="none"/>
+    <circle cx="76" cy="134" r="13" fill="#05FFA1"/>
+    <circle cx="110" cy="134" r="13" fill="#FF2A6D"/>
+    <circle cx="144" cy="134" r="13" fill="#B026FF"/>
+    <circle cx="178" cy="134" r="13" fill="#FCEE0A"/>
+    <circle cx="212" cy="134" r="13" fill="#FF6E27"/>
+    <circle cx="246" cy="134" r="13" fill="#2E6BFF"/>
+    <circle cx="280" cy="134" r="13" fill="#64FFDA"/>
+  </g>
+  <text x="16" y="172" font-family="Consolas, monospace" font-size="10.5" fill="#8CA3C3">当前：<tspan fill="#00E5FF">电光青 #00E5FF</tspan>  ·  8 色可选</text>
+
+  <!-- appearance -->
+  <text x="16" y="212" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">外观</text>
+  <rect x="16" y="226" width="328" height="48" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+  <text x="32" y="255" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#DCF3FF">深色模式</text>
+  <rect x="292" y="240" width="40" height="20" rx="10" fill="#00E5FF" opacity="0.85"/>
+  <circle cx="322" cy="250" r="8" fill="#04060C"/>
+  <rect x="16" y="282" width="328" height="48" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+  <text x="32" y="311" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#DCF3FF">展示字体</text>
+  <text x="344" y="311" text-anchor="end" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" fill="#00E5FF">ORBITRON</text>
+
+  <!-- language -->
+  <text x="16" y="368" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">语言 / Language</text>
+  <rect x="16" y="382" width="90" height="30" rx="9" fill="#00E5FF" fill-opacity="0.16" stroke="#00E5FF"/>
+  <text x="61" y="401" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#00E5FF" font-weight="700">中文</text>
+  <rect x="114" y="382" width="90" height="30" rx="9" fill="#121B30" stroke="#2C3D5E"/>
+  <text x="159" y="401" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#8CA3C3">English</text>
+
+  <!-- intercom server -->
+  <text x="16" y="452" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">对讲服务器</text>
+  <rect x="16" y="466" width="328" height="42" rx="10" fill="#0A0F1C" stroke="#00E5FF" stroke-opacity="0.6" stroke-width="1.4"/>
+  <text x="30" y="492" font-family="Consolas, monospace" font-size="12" fill="#DCF3FF">ws://192.168.1.10:<tspan fill="#00E5FF">8090</tspan>/ws</text>
+  <rect x="16" y="518" width="110" height="32" rx="9" fill="#00E5FF"/>
+  <text x="71" y="538" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12.5" font-weight="700" fill="#04060C">测试连接</text>
+  <circle cx="146" cy="534" r="4" fill="#05FFA1" filter="url(#g)"/>
+  <text x="158" y="538" font-family="Consolas, monospace" font-size="10.5" fill="#05FFA1">已连接 · 18ms</text>
+
+  <!-- data -->
+  <text x="16" y="592" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">数据</text>
+  <rect x="16" y="606" width="328" height="44" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+  <text x="32" y="633" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#DCF3FF">备份与恢复</text>
+  <text x="344" y="633" text-anchor="end" font-family="'Segoe UI', Arial, sans-serif" font-size="13" fill="#8CA3C3">&#8250;</text>
+  <rect x="16" y="658" width="328" height="44" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+  <text x="32" y="685" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#DCF3FF">清除图片缓存</text>
+  <text x="344" y="685" text-anchor="end" font-family="Consolas, monospace" font-size="11" fill="#8CA3C3">126 MB</text>
+
+  <!-- bottom nav -->
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="10" text-anchor="middle">
+    <rect x="0" y="744" width="360" height="36" fill="#070B14"/>
+    <path d="M30 749 l7 7 -7 7 -7 -7 z" fill="none" stroke="#8CA3C3"/>
+    <text x="30" y="776" fill="#8CA3C3">发现</text>
+    <rect x="80" y="750" width="20" height="13" rx="2" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="90" y="776" fill="#8CA3C3">电视</text>
+    <circle cx="150" cy="756" r="7" fill="none" stroke="#8CA3C3" stroke-width="1.6"/><line x1="155" y1="761" x2="159" y2="765" stroke="#8CA3C3" stroke-width="1.6"/>
+    <text x="150" y="776" fill="#8CA3C3">搜索</text>
+    <path d="M208 750 c-3 -3 -8 -1 -8 3 c0 3 4 6 8 9 c4 -3 8 -6 8 -9 c0 -4 -5 -6 -8 -3 z" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="210" y="776" fill="#8CA3C3">收藏</text>
+    <rect x="266" y="749" width="9" height="14" rx="4" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M278 753 a8 8 0 0 1 0 7" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="272" y="776" fill="#8CA3C3">对讲</text>
+    <rect x="310" y="746" width="36" height="18" rx="9" fill="#00E5FF" opacity="0.14"/>
+    <circle cx="328" cy="756" r="6.5" fill="none" stroke="#00E5FF" stroke-width="1.5"/><circle cx="328" cy="756" r="2" fill="#00E5FF"/><path d="M328 747 v3 M328 762 v3 M319 756 h3 M334 756 h3" stroke="#00E5FF" stroke-width="1.5"/>
+    <text x="328" y="776" fill="#00E5FF" font-weight="700">设置</text>
+  </g>
+</svg>

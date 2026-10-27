@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#131C31"/>
+      <stop offset="0.5" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#111A2E"/>
+    </linearGradient>
+    <linearGradient id="key" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1C2942"/>
+      <stop offset="1" stop-color="#0A0F1C"/>
+    </linearGradient>
+    <linearGradient id="disp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#02040A"/>
+      <stop offset="1" stop-color="#07101E"/>
+    </linearGradient>
+    <linearGradient id="wheel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#05070D"/>
+      <stop offset="0.5" stop-color="#2C3D5E"/>
+      <stop offset="1" stop-color="#05070D"/>
+    </linearGradient>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="brush" width="900" height="3" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="1" x2="900" y2="1" stroke="#FFFFFF" stroke-opacity="0.02"/>
+    </pattern>
+  </defs>
+
+  <!-- panel -->
+  <rect width="900" height="440" rx="16" fill="url(#panel)"/>
+  <rect width="900" height="440" rx="16" fill="url(#brush)"/>
+  <rect x="1" y="1" width="898" height="438" rx="16" fill="none" stroke="#00E5FF" stroke-opacity="0.35" stroke-width="2"/>
+  <text x="850" y="30" text-anchor="end" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="3" fill="#8CA3C3">UURADIO &#183; TUNER DECK</text>
+
+  <!-- ===== left function keys ===== -->
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="11" text-anchor="middle">
+    <rect x="22" y="34" width="86" height="84" rx="10" fill="url(#key)" stroke="#2C3D5E"/>
+    <text x="65" y="68" fill="#FF6E27" font-weight="700">&#8250; 退出</text>
+    <text x="65" y="86" fill="#5A6880" font-size="9" font-family="Consolas, monospace">EXIT</text>
+
+    <rect x="22" y="130" width="86" height="84" rx="10" fill="url(#key)" stroke="#2C3D5E"/>
+    <circle cx="65" cy="166" r="14" fill="none" stroke="#FF6E27" stroke-width="2"/>
+    <rect x="59" y="160" width="12" height="12" rx="2" fill="#FF6E27"/>
+    <text x="65" y="198" fill="#5A6880" font-size="9" font-family="Consolas, monospace">STOP</text>
+
+    <rect x="22" y="226" width="86" height="84" rx="10" fill="url(#key)" stroke="#00E5FF" stroke-opacity="0.7"/>
+    <text x="65" y="262" fill="#00E5FF" font-weight="800" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="16" filter="url(#g)">BAND</text>
+    <text x="65" y="282" fill="#5A6880" font-size="9" font-family="Consolas, monospace">FM1 &#183; 12 ST</text>
+
+    <rect x="22" y="322" width="86" height="84" rx="10" fill="url(#key)" stroke="#2C3D5E"/>
+    <path d="M65 348 c-6 -6 -16 -2 -16 6 c0 6 8 12 16 18 c8 -6 16 -12 16 -18 c0 -8 -10 -12 -16 -6 z" fill="none" stroke="#FF6E27" stroke-width="2"/>
+    <text x="65" y="392" fill="#5A6880" font-size="9" font-family="Consolas, monospace">FAV</text>
+  </g>
+
+  <!-- ===== center column ===== -->
+  <!-- display -->
+  <rect x="126" y="30" width="500" height="78" rx="10" fill="url(#disp)" stroke="#00E5FF" stroke-opacity="0.5"/>
+  <text x="146" y="62" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="24" font-weight="800" fill="#00E5FF" filter="url(#g)">CHILLWAVE FM</text>
+  <text x="606" y="66" text-anchor="end" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="30" font-weight="800" fill="#DCF3FF">98.5<tspan font-size="14" fill="#8CA3C3"> MHZ</tspan></text>
+  <text x="146" y="88" font-family="Consolas, monospace" font-size="11" letter-spacing="1" fill="#8CA3C3">RDS: NIGHT DRIVE &#183; SYNTHWAVE ALL NIGHT LONG</text>
+  <circle cx="596" cy="46" r="4" fill="#05FFA1" filter="url(#g)"/>
+  <text x="606" y="50" text-anchor="end" font-family="Consolas, monospace" font-size="9" fill="#05FFA1">SIG &#9679;&#9679;&#9679;&#9675;&#9675;</text>
+
+  <!-- scale ruler -->
+  <g transform="translate(126,130)">
+    <rect x="0" y="0" width="500" height="66" rx="8" fill="#02040A" opacity="0.55"/>
+    <clipPath id="ruler"><rect x="8" y="0" width="484" height="66"/></clipPath>
+    <g clip-path="url(#ruler)">
+      <!-- station slots: every 40px a tick; labels -->
+      <g font-family="Consolas, monospace" font-size="9" fill="#5A6880" text-anchor="middle">
+        <line x1="40" y1="14" x2="40" y2="46" stroke="#2C3D5E" stroke-width="2"/><text x="40" y="60">94.6</text>
+        <line x1="80" y1="20" x2="80" y2="40" stroke="#2C3D5E"/>
+        <line x1="120" y1="14" x2="120" y2="46" stroke="#2C3D5E" stroke-width="2"/><text x="120" y="60">95.4</text>
+        <line x1="160" y1="20" x2="160" y2="40" stroke="#2C3D5E"/>
+        <line x1="200" y1="14" x2="200" y2="46" stroke="#2C3D5E" stroke-width="2"/><text x="200" y="60">96.2</text>
+        <line x1="240" y1="20" x2="240" y2="40" stroke="#2C3D5E"/>
+        <line x1="280" y1="14" x2="280" y2="46" stroke="#2C3D5E" stroke-width="2"/><text x="280" y="60">97.0</text>
+        <line x1="320" y1="20" x2="320" y2="40" stroke="#2C3D5E"/>
+        <line x1="360" y1="10" x2="360" y2="50" stroke="#00E5FF" stroke-width="2.5"/><text x="360" y="60" fill="#00E5FF" font-weight="700">98.5</text>
+        <line x1="400" y1="20" x2="400" y2="40" stroke="#2C3D5E"/>
+        <line x1="440" y1="14" x2="440" y2="46" stroke="#2C3D5E" stroke-width="2"/><text x="440" y="60">99.8</text>
+        <line x1="480" y1="20" x2="480" y2="40" stroke="#2C3D5E"/>
+      </g>
+      <!-- neon dots for stations with signal -->
+      <circle cx="120" cy="8" r="3" fill="#00E5FF" opacity="0.7"/>
+      <circle cx="200" cy="8" r="3" fill="#00E5FF" opacity="0.7"/>
+      <circle cx="280" cy="8" r="3" fill="#00E5FF" opacity="0.7"/>
+      <circle cx="360" cy="8" r="4" fill="#00E5FF" filter="url(#g)"/>
+      <circle cx="440" cy="8" r="3" fill="#00E5FF" opacity="0.7"/>
+    </g>
+    <!-- center pointer -->
+    <line x1="250" y1="-4" x2="250" y2="70" stroke="#FF2A6D" stroke-width="3" filter="url(#g)"/>
+    <path d="M250 -4 l-6 10 h12 z" fill="#FF2A6D"/>
+  </g>
+
+  <!-- waveform -->
+  <g transform="translate(126,212)">
+    <rect x="0" y="0" width="500" height="44" rx="8" fill="#02040A" opacity="0.55"/>
+    <g fill="#00E5FF">
+      <rect x="24" y="18" width="4" height="8" rx="2" opacity="0.5"/><rect x="34" y="14" width="4" height="16" rx="2" opacity="0.6"/><rect x="44" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="54" y="16" width="4" height="12" rx="2" opacity="0.6"/><rect x="64" y="6" width="4" height="32" rx="2"/><rect x="74" y="12" width="4" height="20" rx="2" opacity="0.7"/><rect x="84" y="2" width="4" height="40" rx="2"/><rect x="94" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="104" y="16" width="4" height="12" rx="2" opacity="0.6"/><rect x="114" y="8" width="4" height="28" rx="2" opacity="0.8"/><rect x="124" y="14" width="4" height="16" rx="2" opacity="0.65"/><rect x="134" y="4" width="4" height="36" rx="2"/><rect x="144" y="12" width="4" height="20" rx="2" opacity="0.7"/><rect x="154" y="18" width="4" height="8" rx="2" opacity="0.5"/><rect x="164" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="174" y="6" width="4" height="32" rx="2"/><rect x="184" y="14" width="4" height="16" rx="2" opacity="0.6"/><rect x="194" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="204" y="16" width="4" height="12" rx="2" opacity="0.6"/><rect x="214" y="4" width="4" height="36" rx="2"/><rect x="224" y="12" width="4" height="20" rx="2" opacity="0.7"/><rect x="234" y="8" width="4" height="28" rx="2" opacity="0.8"/><rect x="244" y="18" width="4" height="8" rx="2" opacity="0.5"/><rect x="254" y="14" width="4" height="16" rx="2" opacity="0.65"/><rect x="264" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="274" y="16" width="4" height="12" rx="2" opacity="0.6"/><rect x="284" y="6" width="4" height="32" rx="2"/><rect x="294" y="12" width="4" height="20" rx="2" opacity="0.7"/><rect x="304" y="2" width="4" height="40" rx="2"/><rect x="314" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="324" y="16" width="4" height="12" rx="2" opacity="0.6"/><rect x="334" y="8" width="4" height="28" rx="2" opacity="0.8"/><rect x="344" y="14" width="4" height="16" rx="2" opacity="0.65"/><rect x="354" y="4" width="4" height="36" rx="2"/><rect x="364" y="12" width="4" height="20" rx="2" opacity="0.7"/><rect x="374" y="18" width="4" height="8" rx="2" opacity="0.5"/><rect x="384" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="394" y="14" width="4" height="16" rx="2" opacity="0.6"/><rect x="404" y="6" width="4" height="32" rx="2"/><rect x="414" y="12" width="4" height="20" rx="2" opacity="0.7"/><rect x="424" y="8" width="4" height="28" rx="2" opacity="0.8"/><rect x="434" y="16" width="4" height="12" rx="2" opacity="0.6"/><rect x="444" y="10" width="4" height="24" rx="2" opacity="0.75"/><rect x="454" y="14" width="4" height="16" rx="2" opacity="0.65"/><rect x="464" y="18" width="4" height="8" rx="2" opacity="0.5"/>
+    </g>
+  </g>
+
+  <!-- transport keys -->
+  <g transform="translate(126,272)" text-anchor="middle" font-family="Consolas, monospace" font-size="9" fill="#5A6880">
+    <rect x="0" y="0" width="150" height="64" rx="10" fill="url(#key)" stroke="#2C3D5E"/>
+    <path d="M58 22 l-14 10 14 10 M44 32 h26" fill="none" stroke="#DCF3FF" stroke-width="3"/>
+    <text x="75" y="58">REW</text>
+    <rect x="175" y="0" width="150" height="64" rx="10" fill="url(#key)" stroke="#00E5FF" stroke-opacity="0.8"/>
+    <rect x="238" y="18" width="6" height="28" rx="2" fill="#00E5FF"/><rect x="252" y="18" width="6" height="28" rx="2" fill="#00E5FF"/>
+    <text x="250" y="58" fill="#00E5FF">PLAY</text>
+    <rect x="350" y="0" width="150" height="64" rx="10" fill="url(#key)" stroke="#2C3D5E"/>
+    <path d="M400 22 l14 10 -14 10 M414 32 h-26" fill="none" stroke="#DCF3FF" stroke-width="3"/>
+    <text x="425" y="58">FF</text>
+  </g>
+
+  <!-- ===== right: presets + wheels ===== -->
+  <g>
+    <text x="646" y="44" font-family="Orbitron, 'Segoe UI', Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#8CA3C3">PRESETS</text>
+    <g font-family="'Segoe UI', Arial, sans-serif">
+      <rect x="646" y="54" width="160" height="40" rx="8" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="658" y="79" font-family="Consolas, monospace" font-size="11" fill="#5A6880">P1</text>
+      <text x="684" y="79" font-size="12.5" fill="#8CA3C3">新闻综合</text>
+      <rect x="646" y="100" width="160" height="40" rx="8" fill="#0D1526" stroke="#FF2A6D" stroke-opacity="0.8"/>
+      <rect x="642" y="96" width="4" height="48" rx="2" fill="#FF2A6D" filter="url(#g)"/>
+      <text x="658" y="125" font-family="Consolas, monospace" font-size="11" fill="#FF2A6D">P2</text>
+      <text x="684" y="125" font-size="12.5" fill="#DCF3FF" font-weight="600">Chillwave FM</text>
+      <circle cx="792" cy="120" r="4" fill="#00E5FF" filter="url(#g)"/>
+      <rect x="646" y="146" width="160" height="40" rx="8" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="658" y="171" font-family="Consolas, monospace" font-size="11" fill="#5A6880">P3</text>
+      <text x="684" y="171" font-size="12.5" fill="#8CA3C3">音乐之声</text>
+      <rect x="646" y="192" width="160" height="40" rx="8" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="658" y="217" font-family="Consolas, monospace" font-size="11" fill="#5A6880">P4</text>
+      <text x="684" y="217" font-size="12.5" fill="#8CA3C3">经济之声</text>
+      <rect x="646" y="238" width="160" height="40" rx="8" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="658" y="263" font-family="Consolas, monospace" font-size="11" fill="#5A6880">P5</text>
+      <text x="684" y="263" font-size="12.5" fill="#8CA3C3">Neon Nights</text>
+      <rect x="646" y="284" width="160" height="40" rx="8" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="658" y="309" font-family="Consolas, monospace" font-size="11" fill="#5A6880">P6</text>
+      <text x="684" y="309" font-size="12.5" fill="#8CA3C3">Synth City</text>
+      <rect x="646" y="330" width="160" height="40" rx="8" fill="#0A0F1C" stroke="#1C2942"/>
+      <text x="658" y="355" font-family="Consolas, monospace" font-size="11" fill="#5A6880">P7</text>
+      <text x="684" y="355" font-size="12.5" fill="#8CA3C3">交通广播</text>
+    </g>
+  </g>
+
+  <!-- wheels -->
+  <g text-anchor="middle" font-family="Consolas, monospace">
+    <!-- tune wheel -->
+    <text x="860" y="52" font-size="9" fill="#5A6880">TUNE</text>
+    <rect x="836" y="60" width="48" height="140" rx="14" fill="url(#wheel)" stroke="#2C3D5E"/>
+    <g stroke="#05070D" stroke-width="2.5">
+      <line x1="840" y1="76" x2="880" y2="76"/><line x1="840" y1="88" x2="880" y2="88"/><line x1="840" y1="100" x2="880" y2="100"/><line x1="840" y1="112" x2="880" y2="112"/><line x1="840" y1="124" x2="880" y2="124"/><line x1="840" y1="136" x2="880" y2="136"/>
+    </g>
+    <rect x="838" y="138" width="44" height="24" rx="10" fill="#00E5FF" opacity="0.18"/>
+    <line x1="840" y1="162" x2="880" y2="162" stroke="#05070D" stroke-width="2.5"/><line x1="840" y1="174" x2="880" y2="174" stroke="#05070D" stroke-width="2.5"/>
+    <path d="M860 24 l-6 8 h12 z" fill="#00E5FF"/><path d="M860 236 l-6 -8 h12 z" fill="#00E5FF"/>
+    <!-- vol wheel -->
+    <text x="860" y="258" font-size="9" fill="#5A6880">VOL</text>
+    <rect x="836" y="266" width="48" height="140" rx="14" fill="url(#wheel)" stroke="#2C3D5E"/>
+    <g stroke="#05070D" stroke-width="2.5">
+      <line x1="840" y1="282" x2="880" y2="282"/><line x1="840" y1="294" x2="880" y2="294"/><line x1="840" y1="306" x2="880" y2="306"/><line x1="840" y1="318" x2="880" y2="318"/><line x1="840" y1="330" x2="880" y2="330"/><line x1="840" y1="342" x2="880" y2="342"/><line x1="840" y1="354" x2="880" y2="354"/><line x1="840" y1="366" x2="880" y2="366"/>
+    </g>
+    <rect x="838" y="318" width="44" height="24" rx="10" fill="#FF6E27" opacity="0.2"/>
+    <path d="M860 230 l-6 8 h12 z" fill="#FF6E27" transform="translate(0 24)"/>
+    <path d="M860 424 l-6 -8 h12 z" fill="#FF6E27"/>
+    <text x="860" y="436" font-size="9" fill="#8CA3C3">12/15</text>
+  </g>
+
+  <!-- caliper cursor label -->
+  <g>
+    <rect x="662" y="384" width="128" height="30" rx="8" fill="#121B30" stroke="#FF2A6D" stroke-opacity="0.6"/>
+    <circle cx="676" cy="399" r="4" fill="#FF2A6D" filter="url(#g)"/>
+    <text x="690" y="403" font-family="Consolas, monospace" font-size="10" fill="#DCF3FF">游标对齐 P2 · 98.5</text>
+  </g>
+</svg>

@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="780" viewBox="0 0 360 780">
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="360" height="780" rx="18" fill="#05070D"/>
+  <rect x="0.75" y="0.75" width="358.5" height="778.5" rx="18" fill="none" stroke="#2C3D5E" stroke-width="1.5"/>
+
+  <!-- status bar -->
+  <text x="18" y="22" font-family="Consolas, monospace" font-size="12" fill="#DCF3FF">21:37</text>
+  <g fill="#DCF3FF">
+    <rect x="292" y="14" width="3" height="4"/><rect x="297" y="12" width="3" height="6"/><rect x="302" y="10" width="3" height="8"/><rect x="307" y="8" width="3" height="10"/>
+    <path d="M322 16 a7 7 0 0 1 10 0 l-5 5 z"/>
+    <rect x="338" y="9" width="14" height="8" rx="2" fill="none" stroke="#DCF3FF"/><rect x="340" y="11" width="8" height="4"/>
+  </g>
+
+  <!-- search field -->
+  <rect x="14" y="36" width="332" height="42" rx="10" fill="#0A0F1C" stroke="#00E5FF" stroke-width="1.4"/>
+  <circle cx="34" cy="57" r="7" fill="none" stroke="#00E5FF" stroke-width="1.8"/>
+  <line x1="39" y1="62" x2="45" y2="68" stroke="#00E5FF" stroke-width="1.8"/>
+  <text x="54" y="62" font-family="'Segoe UI', Arial, sans-serif" font-size="14" fill="#DCF3FF">jazz<tspan fill="#00E5FF">|</tspan></text>
+  <rect x="316" y="44" width="22" height="26" rx="6" fill="#00E5FF" opacity="0.14"/>
+  <path d="M327 50 v14 M321 57 h12" stroke="#00E5FF" stroke-width="1.8"/>
+
+  <!-- history / hot keywords -->
+  <text x="16" y="110" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">热门搜索</text>
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="12" text-anchor="middle">
+    <rect x="16" y="122" width="64" height="26" rx="8" fill="#121B30" stroke="#2C3D5E"/><text x="48" y="139" fill="#8CA3C3">jazz</text>
+    <rect x="88" y="122" width="64" height="26" rx="8" fill="#121B30" stroke="#2C3D5E"/><text x="120" y="139" fill="#8CA3C3">news</text>
+    <rect x="160" y="122" width="76" height="26" rx="8" fill="#121B30" stroke="#2C3D5E"/><text x="198" y="139" fill="#8CA3C3">古典音乐</text>
+    <rect x="244" y="122" width="64" height="26" rx="8" fill="#121B30" stroke="#2C3D5E"/><text x="276" y="139" fill="#8CA3C3">rock</text>
+  </g>
+
+  <!-- result header -->
+  <text x="16" y="184" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="2" fill="#8CA3C3">搜索结果</text>
+  <text x="344" y="184" text-anchor="end" font-family="Consolas, monospace" font-size="10.5" fill="#00E5FF">23 条 · "jazz"</text>
+
+  <!-- results -->
+  <g font-family="'Segoe UI', Arial, sans-serif">
+    <g>
+      <rect x="16" y="198" width="328" height="60" rx="10" fill="#0A0F1C" stroke="#00E5FF" stroke-opacity="0.55"/>
+      <rect x="26" y="206" width="44" height="44" rx="10" fill="#0D1526" stroke="#00E5FF" stroke-opacity="0.6"/>
+      <text x="48" y="235" text-anchor="middle" font-size="16" font-weight="800" fill="#00E5FF" filter="url(#g)">J</text>
+      <text x="82" y="224" font-size="14" font-weight="600" fill="#DCF3FF">Jazz FM 91.0</text>
+      <text x="82" y="243" font-family="Consolas, monospace" font-size="10" fill="#8CA3C3">JAZZ &#183; London &#183; 128kbps</text>
+      <circle cx="330" cy="228" r="10" fill="#00E5FF" opacity="0.15"/><circle cx="330" cy="228" r="2.5" fill="#00E5FF"/>
+    </g>
+    <g>
+      <rect x="16" y="266" width="328" height="60" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <rect x="26" y="274" width="44" height="44" rx="10" fill="#0D1526" stroke="#FF2A6D" stroke-opacity="0.6"/>
+      <text x="48" y="303" text-anchor="middle" font-size="16" font-weight="800" fill="#FF2A6D">S</text>
+      <text x="82" y="292" font-size="14" font-weight="600" fill="#DCF3FF">Smooth Jazz Cafe</text>
+      <text x="82" y="311" font-family="Consolas, monospace" font-size="10" fill="#8CA3C3">JAZZ &#183; DE &#183; 96kbps</text>
+      <circle cx="330" cy="296" r="10" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M327 292 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+    <g>
+      <rect x="16" y="334" width="328" height="60" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <rect x="26" y="342" width="44" height="44" rx="10" fill="#0D1526" stroke="#B026FF" stroke-opacity="0.6"/>
+      <text x="48" y="371" text-anchor="middle" font-size="16" font-weight="800" fill="#B026FF">B</text>
+      <text x="82" y="360" font-size="14" font-weight="600" fill="#DCF3FF">Blue Note Radio</text>
+      <text x="82" y="379" font-family="Consolas, monospace" font-size="10" fill="#8CA3C3">JAZZ &#183; US &#183; 192kbps</text>
+      <circle cx="330" cy="364" r="10" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M327 360 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+    <g>
+      <rect x="16" y="402" width="328" height="60" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <rect x="26" y="410" width="44" height="44" rx="10" fill="#0D1526" stroke="#2C3D5E"/>
+      <text x="48" y="439" text-anchor="middle" font-size="16" font-weight="800" fill="#8CA3C3">N</text>
+      <text x="82" y="428" font-size="14" font-weight="600" fill="#DCF3FF">Night Jazz Lounge</text>
+      <text x="82" y="447" font-family="Consolas, monospace" font-size="10" fill="#8CA3C3">JAZZ &#183; FR &#183; 128kbps</text>
+      <circle cx="330" cy="432" r="10" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M327 428 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+    <g>
+      <rect x="16" y="470" width="328" height="60" rx="10" fill="#0A0F1C" stroke="#1C2942"/>
+      <rect x="26" y="478" width="44" height="44" rx="10" fill="#0D1526" stroke="#2C3D5E"/>
+      <text x="48" y="507" text-anchor="middle" font-size="16" font-weight="800" fill="#8CA3C3">A</text>
+      <text x="82" y="496" font-size="14" font-weight="600" fill="#DCF3FF">All Jazz All Day</text>
+      <text x="82" y="515" font-family="Consolas, monospace" font-size="10" fill="#8CA3C3">JAZZ &#183; SE &#183; 64kbps</text>
+      <circle cx="330" cy="500" r="10" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M327 496 l7 4 -7 4 z" fill="#8CA3C3"/>
+    </g>
+  </g>
+
+  <!-- now playing hint -->
+  <rect x="16" y="556" width="328" height="46" rx="10" fill="#121B30" stroke="#00E5FF" stroke-opacity="0.35"/>
+  <circle cx="38" cy="579" r="4" fill="#05FFA1" filter="url(#g)"/>
+  <text x="54" y="583" font-family="Consolas, monospace" font-size="10.5" fill="#8CA3C3">正在播放 <tspan fill="#DCF3FF">Chillwave FM</tspan> · 点结果即切台</text>
+
+  <!-- mini player -->
+  <g>
+    <rect x="0" y="688" width="360" height="56" fill="#121B30"/>
+    <line x1="0" y1="688" x2="360" y2="688" stroke="#00E5FF" stroke-opacity="0.4"/>
+    <rect x="12" y="698" width="36" height="36" rx="8" fill="#0D2B4E" stroke="#00E5FF" stroke-opacity="0.5"/>
+    <text x="60" y="712" font-family="'Segoe UI', Arial, sans-serif" font-size="12.5" font-weight="600" fill="#DCF3FF">Chillwave FM</text>
+    <text x="60" y="728" font-family="Consolas, monospace" font-size="9.5" fill="#8CA3C3">正在播放 &#183; 128k</text>
+    <circle cx="316" cy="716" r="14" fill="none" stroke="#00E5FF" stroke-width="1.6"/>
+    <rect x="311" y="710" width="3.5" height="12" rx="1" fill="#00E5FF"/><rect x="318" y="710" width="3.5" height="12" rx="1" fill="#00E5FF"/>
+  </g>
+
+  <!-- bottom nav -->
+  <g font-family="'Segoe UI', Arial, sans-serif" font-size="10" text-anchor="middle">
+    <rect x="0" y="744" width="360" height="36" fill="#070B14"/>
+    <path d="M30 749 l7 7 -7 7 -7 -7 z" fill="none" stroke="#8CA3C3"/>
+    <text x="30" y="776" fill="#8CA3C3">发现</text>
+    <rect x="80" y="750" width="20" height="13" rx="2" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="90" y="776" fill="#8CA3C3">电视</text>
+    <rect x="132" y="746" width="36" height="18" rx="9" fill="#00E5FF" opacity="0.14"/>
+    <circle cx="150" cy="756" r="7" fill="none" stroke="#00E5FF" stroke-width="1.6"/><line x1="155" y1="761" x2="159" y2="765" stroke="#00E5FF" stroke-width="1.6"/>
+    <text x="150" y="776" fill="#00E5FF" font-weight="700">搜索</text>
+    <path d="M208 750 c-3 -3 -8 -1 -8 3 c0 3 4 6 8 9 c4 -3 8 -6 8 -9 c0 -4 -5 -6 -8 -3 z" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="210" y="776" fill="#8CA3C3">收藏</text>
+    <rect x="266" y="749" width="9" height="14" rx="4" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><path d="M278 753 a8 8 0 0 1 0 7" fill="none" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="272" y="776" fill="#8CA3C3">对讲</text>
+    <circle cx="328" cy="756" r="6.5" fill="none" stroke="#8CA3C3" stroke-width="1.5"/><circle cx="328" cy="756" r="2" fill="#8CA3C3"/><path d="M328 747 v3 M328 762 v3 M319 756 h3 M334 756 h3" stroke="#8CA3C3" stroke-width="1.5"/>
+    <text x="328" y="776" fill="#8CA3C3">设置</text>
+  </g>
+</svg>
